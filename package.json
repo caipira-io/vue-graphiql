@@ -1,0 +1,70 @@
+{
+  "name": "@caipira/vue-graphiql",
+  "version": "0.0.8",
+  "license": "MIT",
+  "private": false,
+  "description": "GraphiQL interactive in-browser GraphQL IDE for vue",
+  "author": {
+    "name": "Theone Lucas",
+    "email": "theone@caipira.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caipira-io/vue-graphiql.git"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json --composite false",
+    "build": "vite build --config build.config.mts",
+    "build:types": "vue-tsc --declaration --emitDeclarationOnly --skipLibCheck -p tsconfig.json"
+  },
+  "dependencies": {
+    "graphiql": "^5.2.1",
+    "@graphiql/react": "^0.37.3",
+    "@graphiql/plugin-explorer": "^5.1.1",
+    "@graphiql/toolkit": "^0.11.3",
+    "graphql": "^16.12.0",
+    "vue": "^3.5.25"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vue/tsconfig": "^0.5.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3",
+    "vite": "^6.4.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-monaco-editor": "^1.1.0",
+    "vue-component-type-helpers": "^2.0.19",
+    "vue-tsc": "^3.1.5",
+    "react": "^19.2.0",
+    "react-compiler-runtime": "19.1.0-rc.1",
+    "react-dom": "^19.2.0"
+  },
+  "peerDependencies": {
+    "vite": ">=4.0.0",
+    "vue": ">=3.0.0"
+  },
+  "module": "dist/vue-graphiql.es.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/vue-graphiql.es.js"
+    },
+    "./style.css": {
+      "default": "./dist/vue-graphiql.css"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "vue",
+    "graphiql",
+    "graphql",
+    "monaco-editor"
+  ]
+}

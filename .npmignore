@@ -1,0 +1,9 @@
+node_modules
+src/
+vite.config.mts
+build.config.ts
+*.test.*
+__tests__/
+.git/
+.gitignore
+README.md
