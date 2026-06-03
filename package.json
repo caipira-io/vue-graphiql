@@ -13,6 +13,7 @@
     "url": "https://github.com/caipira-io/vue-graphiql.git"
   },
   "scripts": {
+    "dev": "vite",
     "typecheck": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json --composite false",
     "build": "vite build --config build.config.mts",
     "build:types": "vue-tsc --declaration --emitDeclarationOnly --skipLibCheck -p tsconfig.json"
