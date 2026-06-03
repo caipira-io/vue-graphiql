@@ -1,22 +1,24 @@
 <script setup lang="ts">
+import type {
+    FieldNode,
+    GraphQLField,
+    GraphQLSchema,
+    SelectionSetNode,
+} from '~/src/utils';
+
 import { computed, ref } from 'vue';
-import ExplorerArg from './ExplorerArg.vue';
+
 import {
     Kind,
-    isObjectType,
-    isInterfaceType,
-    isUnionType,
-    isLeafType,
-    getNamedType,
-    getTypeName,
     getFields,
+    isLeafType,
+    getTypeName,
+    isUnionType,
+    getNamedType,
     isObjectLikeType,
-    getDefaultValueForType,
-    type GraphQLSchema,
-    type GraphQLField,
-    type FieldNode,
-    type SelectionSetNode,
-} from '../utils';
+} from '~/src/utils';
+
+import ExplorerArg from '~/src/components/ExplorerArg.vue';
 
 const props = defineProps<{
     field: GraphQLField<any, any>;
@@ -44,8 +46,10 @@ const fieldSelection = computed<FieldNode | null>(() => {
 const isSelected = computed(() => !!fieldSelection.value);
 
 const namedType = computed(() => getNamedType(props.field.type));
-const hasSubFields = computed(() => namedType.value ? isObjectLikeType(namedType.value) : false);
-const isLeaf = computed(() => namedType.value ? isLeafType(namedType.value) : true);
+const hasSubFields = computed(() =>
+    namedType.value ? isObjectLikeType(namedType.value) : false
+);
+const isLeaf = computed(() => (namedType.value ? isLeafType(namedType.value) : true));
 const typeDisplay = computed(() => getTypeName(props.field.type));
 const childFields = computed(() => {
     if (!namedType.value) return {};
@@ -75,7 +79,7 @@ function toggleField() {
     if (isSelected.value) {
         // Remove field from selections
         const newSelections = props.selections.filter(
-            (s) => !(s.kind === Kind.FIELD && s.name.value === props.field.name),
+            (s) => !(s.kind === Kind.FIELD && s.name.value === props.field.name)
         );
         emit('update:selections', newSelections);
     } else {
@@ -113,7 +117,9 @@ function createFieldNode(): FieldNode {
     return node;
 }
 
-function getDefaultFieldNamesForType(fields: Record<string, GraphQLField<any, any>>): string[] {
+function getDefaultFieldNamesForType(
+    fields: Record<string, GraphQLField<any, any>>
+): string[] {
     const fieldNames = Object.keys(fields);
     if (fieldNames.includes('id')) return ['id'];
     if (fieldNames.includes('edges')) return ['edges'];
@@ -131,16 +137,17 @@ function onChildSelectionsChange(newChildSelections: readonly any[]) {
 
     const updatedField: FieldNode = {
         ...fieldSelection.value,
-        selectionSet: newChildSelections.length > 0
-            ? {
-                kind: Kind.SELECTION_SET,
-                selections: newChildSelections,
-            } as SelectionSetNode
-            : undefined,
+        selectionSet:
+            newChildSelections.length > 0
+                ? ({
+                      kind: Kind.SELECTION_SET,
+                      selections: newChildSelections,
+                  } as SelectionSetNode)
+                : undefined,
     } as FieldNode;
 
     const newSelections = props.selections.map((s) =>
-        s === fieldSelection.value ? updatedField : s,
+        s === fieldSelection.value ? updatedField : s
     );
     emit('update:selections', newSelections);
 }
@@ -155,7 +162,7 @@ function onArgumentsChange(newArgs: readonly any[]) {
     };
 
     const newSelections = props.selections.map((s) =>
-        s === fieldSelection.value ? updatedField : s,
+        s === fieldSelection.value ? updatedField : s
     );
     emit('update:selections', newSelections);
 }
@@ -170,57 +177,85 @@ function onArrowClick() {
 }
 
 // Auto-expand when selected
-const showChildren = computed(() => isSelected.value && hasSubFields.value && (isExpanded.value || props.depth < 1));
+const showChildren = computed(
+    () => isSelected.value && hasSubFields.value && (isExpanded.value || props.depth < 1)
+);
 </script>
 
 <template>
     <div class="explorer-field">
         <!-- Field row -->
         <div
-            class="flex items-center gap-0.5 py-0.5 px-1 rounded hover:bg-[var(--gql-hover)] cursor-pointer group"
+            class="group flex cursor-pointer items-center gap-0.5 rounded px-1 py-0.5 hover:bg-(--gql-hover)"
             :style="{ paddingLeft: `${depth * 12 + 4}px` }"
         >
             <!-- Arrow for object types -->
             <button
                 v-if="hasSubFields"
-                class="flex items-center justify-center w-4 h-4 text-[var(--gql-text-secondary)] shrink-0"
+                class="flex h-4 w-4 shrink-0 items-center justify-center text-(--gql-text-secondary)"
                 @click.stop="onArrowClick"
             >
                 <svg
-                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                    class="w-3 h-3 transition-transform duration-150"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    class="h-3 w-3 transition-transform duration-150"
                     :class="showChildren ? 'rotate-90' : ''"
                 >
-                    <path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                    <path
+                        fill-rule="evenodd"
+                        d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z"
+                        clip-rule="evenodd"
+                    />
                 </svg>
             </button>
 
             <!-- Checkbox for leaf types -->
             <button
                 v-else
-                class="flex items-center justify-center w-4 h-4 shrink-0"
+                class="flex h-4 w-4 shrink-0 items-center justify-center"
                 @click.stop="toggleField"
             >
-                <svg v-if="isSelected" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 text-[var(--gql-primary)]">
-                    <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd" />
+                <svg
+                    v-if="isSelected"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    class="h-3.5 w-3.5 text-(--gql-primary)"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z"
+                        clip-rule="evenodd"
+                    />
                 </svg>
-                <div v-else class="w-3 h-3 rounded-sm border border-[var(--gql-border)]" />
+                <div
+                    v-else
+                    class="h-3 w-3 rounded-sm border border-(--gql-border)"
+                />
             </button>
 
             <!-- Field name -->
             <button
-                class="text-[var(--gql-field)] hover:underline truncate text-left"
+                class="truncate text-left text-(--gql-field) hover:underline"
                 @click="toggleField"
-            >{{ field.name }}</button>
+            >
+                {{ field.name }}
+            </button>
 
             <!-- Type hint -->
-            <span class="text-[var(--gql-text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-[10px] truncate shrink-0">
+            <span
+                class="ml-auto shrink-0 truncate text-[10px] text-(--gql-text-secondary) opacity-0 transition-opacity group-hover:opacity-100"
+            >
                 {{ typeDisplay }}
             </span>
         </div>
 
         <!-- Arguments (shown when field is selected) -->
-        <div v-if="isSelected && fieldArgs.length > 0" :style="{ paddingLeft: `${(depth + 1) * 12 + 4}px` }">
+        <div
+            v-if="isSelected && fieldArgs.length > 0"
+            :style="{ paddingLeft: `${(depth + 1) * 12 + 4}px` }"
+        >
             <ExplorerArg
                 v-for="arg in fieldArgs"
                 :key="arg.name"
@@ -244,9 +279,13 @@ const showChildren = computed(() => isSelected.value && hasSubFields.value && (i
             />
 
             <!-- Union possible types -->
-            <div v-for="possibleType in possibleTypes" :key="possibleType.name" class="mt-1">
+            <div
+                v-for="possibleType in possibleTypes"
+                :key="possibleType.name"
+                class="mt-1"
+            >
                 <div
-                    class="text-[10px] text-[var(--gql-text-secondary)] italic"
+                    class="text-[10px] text-(--gql-text-secondary) italic"
                     :style="{ paddingLeft: `${(depth + 1) * 12 + 4}px` }"
                 >
                     ... on {{ possibleType.name }}

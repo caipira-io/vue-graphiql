@@ -1,7 +1,12 @@
-import type { DocumentNode, OperationDefinitionNode, GraphQLSchema, GraphQLError } from 'graphql';
-import type { Fetcher, Unsubscribable } from '@graphiql/toolkit';
 import type { editor } from 'monaco-editor';
+import type { Fetcher, Unsubscribable } from '@graphiql/toolkit';
 import type { Component, InjectionKey, Ref, ShallowRef, ComputedRef } from 'vue';
+import type {
+    DocumentNode,
+    GraphQLError,
+    GraphQLSchema,
+    OperationDefinitionNode,
+} from 'graphql';
 
 export interface TabState {
     id: string;

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /*
  * GraphiQL Vue - Theme Variables
@@ -15,7 +15,9 @@
     --gql-text: #1f2937;
     --gql-text-secondary: #6b7280;
     --gql-primary: hsl(var(--primary-h, 221) var(--primary-s, 83%) var(--primary-l, 53%));
-    --gql-primary-hover: hsl(var(--primary-h, 221) var(--primary-s, 83%) calc(var(--primary-l, 53%) - 5%));
+    --gql-primary-hover: hsl(
+        var(--primary-h, 221) var(--primary-s, 83%) calc(var(--primary-l, 53%) - 5%)
+    );
 
     /* Syntax colors - light */
     --gql-keyword: #b62e71;
@@ -28,7 +30,14 @@
 
     color: var(--gql-text);
     background: var(--gql-bg);
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family:
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
 }
 
 .graphiql-container.dark {

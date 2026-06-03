@@ -1,11 +1,6 @@
 {
     "extends": "@vue/tsconfig/tsconfig.json",
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.vue",
-        "index.ts",
-        "monaco-vite-config.ts"
-    ],
+    "include": ["src/**/*.ts", "src/**/*.vue", "index.ts", "monaco-vite-config.ts"],
     "compilerOptions": {
         "composite": false,
         "declaration": true,
@@ -13,11 +8,14 @@
         "outDir": "dist",
         "module": "ESNext",
         "target": "ESNext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "paths": {
+            "~/*": ["./*"]
+        }
     }
 }

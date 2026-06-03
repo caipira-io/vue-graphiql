@@ -1,28 +1,31 @@
-import { ref, shallowRef, computed, watch, markRaw } from 'vue';
-import { createGraphiQLFetcher, fillLeafs, mergeAst } from '@graphiql/toolkit';
 import type { Unsubscribable } from '@graphiql/toolkit';
 import type { GraphQLSchema, DocumentNode, OperationDefinitionNode } from 'graphql';
-import type { editor } from 'monaco-editor';
-import type { GraphiQLStore, GraphiQLPlugin, TabState, GraphiQLProps } from './types';
+import type { GraphiQLStore, GraphiQLPlugin, TabState, GraphiQLProps } from '~/src/types';
+
+import { ref, shallowRef, computed, watch, markRaw } from 'vue';
+import { createGraphiQLFetcher, fillLeafs, mergeAst } from '@graphiql/toolkit';
+
 import {
-    createStorage,
+    parse,
+    print,
+    debounce,
     createTab,
+    parseJsonc,
+    formatError,
+    formatResult,
+    createStorage,
+    introspectSchema,
+    getOperationFacts,
     serializeTabState,
     deserializeTabState,
-    getOperationFacts,
     getSelectedOperationName,
-    introspectSchema,
-    formatResult,
-    formatError,
-    parseJsonc,
-    debounce,
-    print,
-    parse,
-} from './utils';
+} from '~/src/utils';
 
 export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     const namespace = props.namespace ?? '';
-    const defaultQuery = props.defaultQuery ?? '# Welcome to GraphiQL\n#\n# Start typing a query, or use the Explorer\n# to build one by clicking fields.\n\n';
+    const defaultQuery =
+        props.defaultQuery ??
+        '# Welcome to GraphiQL\n#\n# Start typing a query, or use the Explorer\n# to build one by clicking fields.\n\n';
     const isHeadersEditorEnabled = props.isHeadersEditorEnabled ?? false;
 
     // Storage
@@ -53,15 +56,22 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
         const restored = deserializeTabState(savedTabState);
         if (restored && restored.tabs.length > 0) {
             restoredTabs = restored.tabs;
-            restoredActiveIndex = Math.min(restored.activeTabIndex, restored.tabs.length - 1);
+            restoredActiveIndex = Math.min(
+                restored.activeTabIndex,
+                restored.tabs.length - 1
+            );
         }
     }
 
-    const tabs = ref<TabState[]>(restoredTabs ?? [createTab({
-        query: initialQuery,
-        variables: initialVariables,
-        headers: initialHeaders,
-    })]);
+    const tabs = ref<TabState[]>(
+        restoredTabs ?? [
+            createTab({
+                query: initialQuery,
+                variables: initialVariables,
+                headers: initialHeaders,
+            }),
+        ]
+    );
     const activeTabIndex = ref(restoredActiveIndex);
     const activeTab = computed(() => tabs.value[activeTabIndex.value]);
 
@@ -95,7 +105,14 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
 
     // ---- Debounced storage ----
     const debouncedStoreTabs = debounce(() => {
-        storage.set('tabState', serializeTabState(tabs.value, activeTabIndex.value, shouldPersistHeaders.value));
+        storage.set(
+            'tabState',
+            serializeTabState(
+                tabs.value,
+                activeTabIndex.value,
+                shouldPersistHeaders.value
+            )
+        );
     }, 500);
 
     // ---- Actions ----
@@ -109,7 +126,7 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
             const newOpName = getSelectedOperationName(
                 operations.value,
                 operationName.value,
-                facts.operations,
+                facts.operations
             );
             operationName.value = newOpName;
             operations.value = facts.operations;
@@ -171,14 +188,22 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
         try {
             variables = parseJsonc(tab.variables);
         } catch (err) {
-            setResponseValue(formatError(new Error(`Variables are invalid JSON: ${(err as Error).message}`)));
+            setResponseValue(
+                formatError(
+                    new Error(`Variables are invalid JSON: ${(err as Error).message}`)
+                )
+            );
             return;
         }
 
         try {
             headers = parseJsonc(tab.headers);
         } catch (err) {
-            setResponseValue(formatError(new Error(`Headers are invalid JSON: ${(err as Error).message}`)));
+            setResponseValue(
+                formatError(
+                    new Error(`Headers are invalid JSON: ${(err as Error).message}`)
+                )
+            );
             return;
         }
 
@@ -189,7 +214,7 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
         try {
             const result = fetcher(
                 { query: queryStr, variables, operationName: opName },
-                { headers, documentAST: documentAST.value ?? undefined },
+                { headers, documentAST: documentAST.value ?? undefined }
             );
 
             // Handle Promise
@@ -306,7 +331,9 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     function addTab() {
         const newTab = createTab({
             query: defaultQuery,
-            headers: shouldPersistHeaders.value ? (tabs.value[activeTabIndex.value]?.headers ?? '') : '',
+            headers: shouldPersistHeaders.value
+                ? (tabs.value[activeTabIndex.value]?.headers ?? '')
+                : '',
         });
         tabs.value.push(newTab);
         activeTabIndex.value = tabs.value.length - 1;
@@ -446,7 +473,10 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
         if (tab) {
             if (which === 'query') {
                 tab.query = value;
-                tab.title = value ? (getOperationFacts(value)?.operations[0]?.name?.value || tabs.value[activeTabIndex.value].title) : '<untitled>';
+                tab.title = value
+                    ? getOperationFacts(value)?.operations[0]?.name?.value ||
+                      tabs.value[activeTabIndex.value].title
+                    : '<untitled>';
                 updateOperationFacts();
                 storage.set('query', value);
             } else if (which === 'variable') {
@@ -486,11 +516,14 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     // Will be resolved after plugins are registered
 
     // ---- Watch theme from props ----
-    watch(() => props.theme, (newTheme) => {
-        if (newTheme) {
-            theme.value = newTheme;
+    watch(
+        () => props.theme,
+        (newTheme) => {
+            if (newTheme) {
+                theme.value = newTheme;
+            }
         }
-    });
+    );
 
     // ---- Watch shouldPersistHeaders ----
     watch(shouldPersistHeaders, (val) => {

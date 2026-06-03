@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { inject, watch } from 'vue';
-import MonacoEditor from './MonacoEditor.vue';
-import { GRAPHIQL_STORE_KEY } from '../types';
-import { useMonaco } from '../composables/useMonaco';
-import { debounce } from '../utils';
+
+import { debounce } from '~/src/utils';
+import { useMonaco } from '~/src/composables/useMonaco';
+import { GRAPHIQL_STORE_KEY } from '~/src/types';
+
+import MonacoEditor from '~/src/components/MonacoEditor.vue';
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
 const { updateSchema } = useMonaco();
@@ -62,11 +64,14 @@ function onValueChange(value: string) {
 }
 
 // When schema changes, update MonacoGraphQL
-watch(() => store.schema.value, (newSchema) => {
-    if (newSchema) {
-        updateSchema(newSchema, store.instanceId);
+watch(
+    () => store.schema.value,
+    (newSchema) => {
+        if (newSchema) {
+            updateSchema(newSchema, store.instanceId);
+        }
     }
-});
+);
 </script>
 
 <template>

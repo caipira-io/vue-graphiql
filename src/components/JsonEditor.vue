@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { inject } from 'vue';
-import MonacoEditor from './MonacoEditor.vue';
-import { GRAPHIQL_STORE_KEY } from '../types';
+
+import { GRAPHIQL_STORE_KEY } from '~/src/types';
+
+import MonacoEditor from '~/src/components/MonacoEditor.vue';
 
 const props = defineProps<{
     mode: 'variable' | 'header';
@@ -9,9 +11,10 @@ const props = defineProps<{
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
 
-const uri = props.mode === 'variable'
-    ? `${store.instanceId}variables.json`
-    : `${store.instanceId}request-headers.json`;
+const uri =
+    props.mode === 'variable'
+        ? `${store.instanceId}variables.json`
+        : `${store.instanceId}request-headers.json`;
 
 function onEditorMounted(editor: any) {
     store.editors[props.mode] = editor;
@@ -36,9 +39,10 @@ function onValueChange(value: string) {
     store.setEditorValue(props.mode, value);
 }
 
-const value = props.mode === 'variable'
-    ? (store.activeTab.value?.variables ?? '')
-    : (store.activeTab.value?.headers ?? '');
+const value =
+    props.mode === 'variable'
+        ? (store.activeTab.value?.variables ?? '')
+        : (store.activeTab.value?.headers ?? '');
 </script>
 
 <template>

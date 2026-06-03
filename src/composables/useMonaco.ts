@@ -34,7 +34,8 @@ export function useMonaco() {
         initPromise = (async () => {
             try {
                 // Dynamic import for SSR safety - these are peer dependencies
-                const monacoEditorModule = await import('monaco-graphql/esm/monaco-editor.js');
+                const monacoEditorModule =
+                    await import('monaco-graphql/esm/monaco-editor.js');
                 const monacoGraphQLModule = await import('monaco-graphql/esm/lite.js');
 
                 const monaco = monacoEditorModule as any as Monaco;
@@ -115,7 +116,10 @@ export function useMonaco() {
         return initPromise;
     }
 
-    function updateSchema(schema: import('graphql').GraphQLSchema | null, instanceId: string) {
+    function updateSchema(
+        schema: import('graphql').GraphQLSchema | null,
+        instanceId: string
+    ) {
         if (!state.value.monacoGraphQL || !schema) return;
         state.value.monacoGraphQL.setSchemaConfig([
             {

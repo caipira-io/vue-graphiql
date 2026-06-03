@@ -1,25 +1,28 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import type {
+    FieldNode,
+    ValueNode,
+    ArgumentNode,
+    GraphQLSchema,
+    GraphQLArgument,
+    GraphQLEnumType,
+    GraphQLInputObjectType,
+} from '~/src/utils';
+
+import { computed } from 'vue';
+
 import {
     Kind,
     isEnumType,
-    isInputObjectType,
+    getTypeName,
+    getNamedType,
     isScalarType,
     isNonNullType,
-    getNamedType,
-    getTypeName,
-    coerceArgValue,
-    getDefaultValueForType,
     printArgValue,
-    type GraphQLSchema,
-    type GraphQLArgument,
-    type FieldNode,
-    type ArgumentNode,
-    type ValueNode,
-    type GraphQLEnumType,
-    type GraphQLInputObjectType,
-    type GraphQLScalarType,
-} from '../utils';
+    coerceArgValue,
+    isInputObjectType,
+    getDefaultValueForType,
+} from '~/src/utils';
 
 const props = defineProps<{
     arg: GraphQLArgument;
@@ -37,9 +40,10 @@ const isRequired = computed(() => isNonNullType(props.arg.type));
 // Find existing argument value in the field selection
 const argNode = computed<ArgumentNode | null>(() => {
     if (!props.fieldSelection.arguments) return null;
-    return props.fieldSelection.arguments.find(
-        (a) => a.name.value === props.arg.name,
-    ) ?? null;
+    return (
+        props.fieldSelection.arguments.find((a) => a.name.value === props.arg.name) ??
+        null
+    );
 });
 
 const isActive = computed(() => !!argNode.value);
@@ -50,15 +54,23 @@ const currentValue = computed(() => {
 });
 
 // Type checks
-const isEnum = computed(() => namedType.value ? isEnumType(namedType.value) : false);
-const isBoolean = computed(() => namedType.value ? isScalarType(namedType.value) && namedType.value.name === 'Boolean' : false);
-const isInputObject = computed(() => namedType.value ? isInputObjectType(namedType.value) : false);
-const isScalar = computed(() => namedType.value ? isScalarType(namedType.value) : false);
+const isEnum = computed(() => (namedType.value ? isEnumType(namedType.value) : false));
+const isBoolean = computed(() =>
+    namedType.value
+        ? isScalarType(namedType.value) && namedType.value.name === 'Boolean'
+        : false
+);
+const isInputObject = computed(() =>
+    namedType.value ? isInputObjectType(namedType.value) : false
+);
+const isScalar = computed(() =>
+    namedType.value ? isScalarType(namedType.value) : false
+);
 
 // Get enum values for dropdown
 const enumValues = computed(() => {
     if (!isEnum.value || !namedType.value) return [];
-    return (namedType.value as GraphQLEnumType).getValues().map(v => v.value);
+    return (namedType.value as GraphQLEnumType).getValues().map((v) => v.value);
 });
 
 // Get input object fields for nested rendering
@@ -81,20 +93,22 @@ function addArg() {
         name: { kind: Kind.NAME, value: props.arg.name },
         value: getDefaultValueForType(props.arg.type),
     };
-    const existing = props.fieldSelection.arguments ? [...props.fieldSelection.arguments] : [];
+    const existing = props.fieldSelection.arguments
+        ? [...props.fieldSelection.arguments]
+        : [];
     emit('update:arguments', [...existing, newArg]);
 }
 
 function removeArg() {
     const args = (props.fieldSelection.arguments ?? []).filter(
-        (a) => a.name.value !== props.arg.name,
+        (a) => a.name.value !== props.arg.name
     );
     emit('update:arguments', args);
 }
 
 function updateValue(newValue: ValueNode) {
     const args = (props.fieldSelection.arguments ?? []).map((a) =>
-        a.name.value === props.arg.name ? { ...a, value: newValue } : a,
+        a.name.value === props.arg.name ? { ...a, value: newValue } : a
     );
     emit('update:arguments', args);
 }
@@ -118,7 +132,7 @@ function onBooleanSelect(event: Event) {
 function onInputObjectFieldChange(fieldName: string, value: ValueNode) {
     if (!argNode.value || argNode.value.value.kind !== Kind.OBJECT) return;
     const fields = argNode.value.value.fields.map((f: any) =>
-        f.name.value === fieldName ? { ...f, value } : f,
+        f.name.value === fieldName ? { ...f, value } : f
     );
     updateValue({ kind: Kind.OBJECT, fields } as any);
 }
@@ -129,31 +143,50 @@ function onInputObjectFieldChange(fieldName: string, value: ValueNode) {
         <div class="flex items-center gap-1">
             <!-- Toggle checkbox -->
             <button
-                class="flex items-center justify-center w-3 h-3 shrink-0"
+                class="flex h-3 w-3 shrink-0 items-center justify-center"
                 @click="toggleArg"
             >
-                <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3 h-3 text-[var(--gql-primary)]">
-                    <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd" />
+                <svg
+                    v-if="isActive"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    class="h-3 w-3 text-(--gql-primary)"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z"
+                        clip-rule="evenodd"
+                    />
                 </svg>
-                <div v-else class="w-2.5 h-2.5 rounded-sm border border-[var(--gql-border)]" />
+                <div
+                    v-else
+                    class="h-2.5 w-2.5 rounded-sm border border-(--gql-border)"
+                />
             </button>
 
             <!-- Arg name -->
             <span
-                class="text-[var(--gql-arg)] cursor-pointer"
+                class="cursor-pointer text-(--gql-arg)"
                 :class="{ 'font-medium': isRequired }"
                 @click="toggleArg"
-            >{{ arg.name }}<span v-if="isRequired" class="text-red-400">*</span></span>
+                >{{ arg.name
+                }}<span
+                    v-if="isRequired"
+                    class="text-red-400"
+                    >*</span
+                ></span
+            >
 
             <!-- Value input (only when active) -->
             <template v-if="isActive">
-                <span class="text-[var(--gql-text-secondary)]">:</span>
+                <span class="text-(--gql-text-secondary)">:</span>
 
                 <!-- Boolean select -->
                 <select
                     v-if="isBoolean"
                     :value="currentValue"
-                    class="gql-arg-input text-[var(--gql-text)]"
+                    class="gql-arg-input text-(--gql-text)"
                     @change="onBooleanSelect"
                 >
                     <option value="true">true</option>
@@ -164,10 +197,16 @@ function onInputObjectFieldChange(fieldName: string, value: ValueNode) {
                 <select
                     v-else-if="isEnum"
                     :value="currentValue"
-                    class="gql-arg-input text-[var(--gql-text)]"
+                    class="gql-arg-input text-(--gql-text)"
                     @change="onEnumSelect"
                 >
-                    <option v-for="v in enumValues" :key="v" :value="v">{{ v }}</option>
+                    <option
+                        v-for="v in enumValues"
+                        :key="v"
+                        :value="v"
+                    >
+                        {{ v }}
+                    </option>
                 </select>
 
                 <!-- Scalar input -->
@@ -175,27 +214,47 @@ function onInputObjectFieldChange(fieldName: string, value: ValueNode) {
                     v-else-if="isScalar && !isInputObject"
                     :value="currentValue"
                     :placeholder="arg.name"
-                    class="gql-arg-input text-[var(--gql-string)]"
-                    :style="{ width: Math.max(40, Math.min(200, (currentValue.length + 1) * 7)) + 'px' }"
+                    class="gql-arg-input text-(--gql-string)"
+                    :style="{
+                        width:
+                            Math.max(40, Math.min(200, (currentValue.length + 1) * 7)) +
+                            'px',
+                    }"
                     @input="onScalarInput"
                 />
             </template>
 
             <!-- Type hint -->
-            <span class="text-[var(--gql-text-secondary)] text-[10px] ml-auto opacity-60">
+            <span class="ml-auto text-[10px] text-(--gql-text-secondary) opacity-60">
                 {{ getTypeName(arg.type) }}
             </span>
         </div>
 
         <!-- Input object fields (nested) -->
-        <div v-if="isActive && isInputObject && argNode?.value?.kind === Kind.OBJECT" class="pl-4 border-l border-[var(--gql-border)] ml-1.5 mt-0.5">
-            <div v-for="field in inputObjectFields" :key="field.name" class="flex items-center gap-1 py-0.5">
-                <span class="text-[var(--gql-arg)]">{{ field.name }}:</span>
+        <div
+            v-if="isActive && isInputObject && argNode?.value?.kind === Kind.OBJECT"
+            class="mt-0.5 ml-1.5 border-l border-(--gql-border) pl-4"
+        >
+            <div
+                v-for="field in inputObjectFields"
+                :key="field.name"
+                class="flex items-center gap-1 py-0.5"
+            >
+                <span class="text-(--gql-arg)">{{ field.name }}:</span>
                 <input
                     :value="getInputObjectFieldValue(argNode!.value, field.name)"
                     :placeholder="field.name"
-                    class="gql-arg-input text-[var(--gql-string)]"
-                    @input="(e: any) => onInputObjectFieldChange(field.name, coerceArgValue(field.type, (e.target as HTMLInputElement).value))"
+                    class="gql-arg-input text-(--gql-string)"
+                    @input="
+                        (e: any) =>
+                            onInputObjectFieldChange(
+                                field.name,
+                                coerceArgValue(
+                                    field.type,
+                                    (e.target as HTMLInputElement).value
+                                )
+                            )
+                    "
                 />
             </div>
         </div>

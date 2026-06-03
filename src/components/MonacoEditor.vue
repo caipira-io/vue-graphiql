@@ -1,24 +1,28 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, inject } from 'vue';
-import { useMonaco } from '../composables/useMonaco';
-import { GRAPHIQL_STORE_KEY } from '../types';
 
-const props = withDefaults(defineProps<{
-    language?: string;
-    value?: string;
-    readOnly?: boolean;
-    lineNumbers?: boolean;
-    wordWrap?: boolean;
-    uri?: string;
-    tabIndex?: number;
-}>(), {
-    language: 'json',
-    value: '',
-    readOnly: false,
-    lineNumbers: true,
-    wordWrap: false,
-    tabIndex: -1,
-});
+import { useMonaco } from '~/src/composables/useMonaco';
+import { GRAPHIQL_STORE_KEY } from '~/src/types';
+
+const props = withDefaults(
+    defineProps<{
+        language?: string;
+        value?: string;
+        readOnly?: boolean;
+        lineNumbers?: boolean;
+        wordWrap?: boolean;
+        uri?: string;
+        tabIndex?: number;
+    }>(),
+    {
+        language: 'json',
+        value: '',
+        readOnly: false,
+        lineNumbers: true,
+        wordWrap: false,
+        tabIndex: -1,
+    }
+);
 
 const emit = defineEmits<{
     (e: 'update:value', value: string): void;
@@ -70,7 +74,8 @@ onMounted(async () => {
             horizontalScrollbarSize: 8,
         },
         scrollBeyondLastLine: false,
-        fontFamily: '"Fira Code", "Cascadia Code", "JetBrains Mono", Menlo, Monaco, "Courier New", monospace',
+        fontFamily:
+            '"Fira Code", "Cascadia Code", "JetBrains Mono", Menlo, Monaco, "Courier New", monospace',
         fontLigatures: true,
         lineNumbersMinChars: 3,
         readOnly: props.readOnly,
@@ -94,21 +99,27 @@ onMounted(async () => {
 });
 
 // Watch for external value changes
-watch(() => props.value, (newValue) => {
-    if (editorInstance && editorInstance.getValue() !== newValue) {
-        isSettingValue = true;
-        editorInstance.setValue(newValue);
-        isSettingValue = false;
+watch(
+    () => props.value,
+    (newValue) => {
+        if (editorInstance && editorInstance.getValue() !== newValue) {
+            isSettingValue = true;
+            editorInstance.setValue(newValue);
+            isSettingValue = false;
+        }
     }
-});
+);
 
 // Watch for theme changes
-watch(() => store.theme.value, (newTheme) => {
-    if (editorInstance && monacoState.value.monaco) {
-        const themeName = newTheme === 'dark' ? 'graphiql-dark' : 'graphiql-light';
-        monacoState.value.monaco.editor.setTheme(themeName);
+watch(
+    () => store.theme.value,
+    (newTheme) => {
+        if (editorInstance && monacoState.value.monaco) {
+            const themeName = newTheme === 'dark' ? 'graphiql-dark' : 'graphiql-light';
+            monacoState.value.monaco.editor.setTheme(themeName);
+        }
     }
-});
+);
 
 onUnmounted(() => {
     if (editorInstance) {
@@ -124,5 +135,8 @@ defineExpose({
 </script>
 
 <template>
-    <div ref="containerRef" class="size-full min-h-0" />
+    <div
+        ref="containerRef"
+        class="size-full min-h-0"
+    />
 </template>

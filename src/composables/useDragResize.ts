@@ -1,6 +1,9 @@
-import { ref, onMounted, onUnmounted, type Ref } from 'vue';
-import type { StorageWrapper } from '../types';
-import { debounce } from '../utils';
+import type { Ref } from 'vue';
+import type { StorageWrapper } from '~/src/types';
+
+import { ref, onMounted, onUnmounted } from 'vue';
+
+import { debounce } from '~/src/utils';
 
 export interface UseDragResizeOptions {
     direction: 'horizontal' | 'vertical';
@@ -36,9 +39,10 @@ export function useDragResize(options: UseDragResizeOptions) {
     let storedFlexValue: number = defaultSizeRelation;
 
     // Debounced storage write
-    const debouncedStore = storageKey && storage
-        ? debounce((value: string) => storage.set(storageKey, value), 500)
-        : null;
+    const debouncedStore =
+        storageKey && storage
+            ? debounce((value: string) => storage.set(storageKey, value), 500)
+            : null;
 
     function applyLayout() {
         const first = firstRef.value;
@@ -106,12 +110,12 @@ export function useDragResize(options: UseDragResizeOptions) {
             e.preventDefault();
             isDragging = true;
             const rect = dragBar!.getBoundingClientRect();
-            dragOffset = direction === 'horizontal'
-                ? e.clientX - rect.left
-                : e.clientY - rect.top;
+            dragOffset =
+                direction === 'horizontal' ? e.clientX - rect.left : e.clientY - rect.top;
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
-            document.body.style.cursor = direction === 'horizontal' ? 'col-resize' : 'row-resize';
+            document.body.style.cursor =
+                direction === 'horizontal' ? 'col-resize' : 'row-resize';
             document.body.style.userSelect = 'none';
         }
 

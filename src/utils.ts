@@ -1,38 +1,41 @@
+import type { StorageWrapper, TabState } from '~/src/types';
+import type {
+    FieldNode,
+    ValueNode,
+    ArgumentNode,
+    DocumentNode,
+    GraphQLField,
+    GraphQLSchema,
+    GraphQLArgument,
+    GraphQLEnumType,
+    GraphQLInputType,
+    GraphQLNamedType,
+    SelectionSetNode,
+    GraphQLObjectType,
+    GraphQLOutputType,
+    GraphQLScalarType,
+    GraphQLInputObjectType,
+    OperationDefinitionNode,
+} from 'graphql';
+
 import {
+    Kind,
     parse,
     print,
     visit,
-    getIntrospectionQuery,
-    buildClientSchema,
-    type DocumentNode,
-    type OperationDefinitionNode,
-    type GraphQLSchema,
-    type GraphQLNamedType,
-    type GraphQLField,
-    type GraphQLArgument,
-    type GraphQLInputType,
-    type GraphQLOutputType,
-    type GraphQLObjectType,
-    type GraphQLEnumType,
-    type GraphQLInputObjectType,
-    type GraphQLScalarType,
-    type SelectionSetNode,
-    type FieldNode,
-    type ArgumentNode,
-    type ValueNode,
-    Kind,
-    isObjectType,
-    isInterfaceType,
-    isUnionType,
     isEnumType,
-    isInputObjectType,
+    isLeafType,
+    isListType,
+    isUnionType,
+    getNamedType,
+    isObjectType,
     isScalarType,
     isNonNullType,
-    isListType,
-    isLeafType,
-    getNamedType,
+    isInterfaceType,
+    buildClientSchema,
+    isInputObjectType,
+    getIntrospectionQuery,
 } from 'graphql';
-import type { StorageWrapper, TabState } from './types';
 
 // ---- UUID ----
 let _idCounter = 0;
@@ -60,7 +63,11 @@ export function fuzzyExtractOperationName(query: string): string {
     return match ? match[2] : '<untitled>';
 }
 
-export function hashTabContents(query: string, variables: string, headers: string): string {
+export function hashTabContents(
+    query: string,
+    variables: string,
+    headers: string
+): string {
     return [query ?? '', variables ?? '', headers ?? ''].join('|');
 }
 
@@ -83,7 +90,7 @@ export function createTab(overrides: Partial<TabState> = {}): TabState {
 export function serializeTabState(
     tabs: TabState[],
     activeTabIndex: number,
-    shouldPersistHeaders: boolean,
+    shouldPersistHeaders: boolean
 ): string {
     return JSON.stringify({
         activeTabIndex,
@@ -98,18 +105,23 @@ export function serializeTabState(
     });
 }
 
-export function deserializeTabState(json: string): { tabs: TabState[]; activeTabIndex: number } | null {
+export function deserializeTabState(
+    json: string
+): { tabs: TabState[]; activeTabIndex: number } | null {
     try {
         const data = JSON.parse(json);
         if (!data || !Array.isArray(data.tabs)) return null;
         return {
-            activeTabIndex: typeof data.activeTabIndex === 'number' ? data.activeTabIndex : 0,
-            tabs: data.tabs.map((t: any) => createTab({
-                query: t.query ?? '',
-                variables: t.variables ?? '',
-                headers: t.headers ?? '',
-                operationName: t.operationName ?? null,
-            })),
+            activeTabIndex:
+                typeof data.activeTabIndex === 'number' ? data.activeTabIndex : 0,
+            tabs: data.tabs.map((t: any) =>
+                createTab({
+                    query: t.query ?? '',
+                    variables: t.variables ?? '',
+                    headers: t.headers ?? '',
+                    operationName: t.operationName ?? null,
+                })
+            ),
         };
     } catch {
         return null;
@@ -176,7 +188,7 @@ export function getOperationFacts(queryStr: string): {
 export function getSelectedOperationName(
     prevOperations: OperationDefinitionNode[] | undefined,
     prevName: string | null | undefined,
-    operations: OperationDefinitionNode[] | undefined,
+    operations: OperationDefinitionNode[] | undefined
 ): string | null {
     if (!operations || operations.length === 0) return null;
     const names = operations.map((o) => o.name?.value ?? null);
@@ -206,11 +218,7 @@ export function formatResult(result: any): string {
 
 export function formatError(error: unknown): string {
     if (Array.isArray(error)) {
-        return JSON.stringify(
-            { errors: error.map(formatSingleError) },
-            null,
-            2,
-        );
+        return JSON.stringify({ errors: error.map(formatSingleError) }, null, 2);
     }
     return JSON.stringify({ errors: [formatSingleError(error)] }, null, 2);
 }
@@ -237,7 +245,9 @@ export function isObjectLikeType(type: GraphQLNamedType): boolean {
     return isObjectType(type) || isInterfaceType(type) || isUnionType(type);
 }
 
-export function getFields(type: GraphQLNamedType): Record<string, GraphQLField<any, any>> | null {
+export function getFields(
+    type: GraphQLNamedType
+): Record<string, GraphQLField<any, any>> | null {
     if (isObjectType(type) || isInterfaceType(type)) {
         return type.getFields();
     }
@@ -247,7 +257,7 @@ export function getFields(type: GraphQLNamedType): Record<string, GraphQLField<a
 // ---- Explorer AST helpers ----
 export function findFieldSelection(
     selections: ReadonlyArray<any> | undefined,
-    fieldName: string,
+    fieldName: string
 ): FieldNode | null {
     if (!selections) return null;
     for (const sel of selections) {
@@ -262,7 +272,7 @@ export function toggleFieldInSelections(
     selections: ReadonlyArray<any>,
     fieldName: string,
     fieldType: GraphQLOutputType,
-    schema: GraphQLSchema,
+    schema: GraphQLSchema
 ): any[] {
     const existing = findFieldSelection(selections, fieldName);
     if (existing) {
@@ -274,7 +284,7 @@ export function toggleFieldInSelections(
 function createFieldNode(
     fieldName: string,
     fieldType: GraphQLOutputType,
-    schema: GraphQLSchema,
+    schema: GraphQLSchema
 ): FieldNode {
     const namedType = unwrapType(fieldType);
     const hasSubFields = isObjectLikeType(namedType);
@@ -316,7 +326,7 @@ function getDefaultFieldNames(type: GraphQLNamedType, _schema: GraphQLSchema): s
 
 export function addArgumentToField(
     fieldNode: FieldNode,
-    arg: GraphQLArgument,
+    arg: GraphQLArgument
 ): FieldNode {
     const existingArgs = fieldNode.arguments ? [...fieldNode.arguments] : [];
     existingArgs.push(createArgumentNode(arg));
@@ -325,21 +335,19 @@ export function addArgumentToField(
 
 export function removeArgumentFromField(
     fieldNode: FieldNode,
-    argName: string,
+    argName: string
 ): FieldNode {
-    const args = (fieldNode.arguments ?? []).filter(
-        (a) => a.name.value !== argName,
-    );
+    const args = (fieldNode.arguments ?? []).filter((a) => a.name.value !== argName);
     return { ...fieldNode, arguments: args };
 }
 
 export function updateArgumentValue(
     fieldNode: FieldNode,
     argName: string,
-    value: ValueNode,
+    value: ValueNode
 ): FieldNode {
     const args = (fieldNode.arguments ?? []).map((a) =>
-        a.name.value === argName ? { ...a, value } : a,
+        a.name.value === argName ? { ...a, value } : a
     );
     return { ...fieldNode, arguments: args };
 }
@@ -437,9 +445,7 @@ export function printArgValue(value: ValueNode): string {
 }
 
 // ---- Introspection ----
-export async function introspectSchema(
-    fetcher: any,
-): Promise<GraphQLSchema> {
+export async function introspectSchema(fetcher: any): Promise<GraphQLSchema> {
     const introspectionQuery = getIntrospectionQuery({
         inputValueDeprecation: true,
         schemaDescription: true,
@@ -453,7 +459,11 @@ export async function introspectSchema(
             inputValueDeprecation: true,
             schemaDescription: true,
         });
-        const fallbackResult = await fetchResult(fetcher, fallbackQuery, 'IntrospectionQuery');
+        const fallbackResult = await fetchResult(
+            fetcher,
+            fallbackQuery,
+            'IntrospectionQuery'
+        );
         if (!fallbackResult?.data) {
             throw new Error('Failed to fetch schema via introspection');
         }
@@ -463,7 +473,11 @@ export async function introspectSchema(
     return buildClientSchema(result.data as any);
 }
 
-async function fetchResult(fetcher: any, query: string, operationName: string): Promise<any> {
+async function fetchResult(
+    fetcher: any,
+    query: string,
+    operationName: string
+): Promise<any> {
     const result = fetcher({ query, operationName }, {});
 
     if (result && typeof result.then === 'function') {
@@ -478,7 +492,10 @@ async function fetchResult(fetcher: any, query: string, operationName: string): 
     if (result && typeof result.subscribe === 'function') {
         return new Promise((resolve, reject) => {
             const sub = result.subscribe({
-                next: (val: any) => { sub.unsubscribe(); resolve(val); },
+                next: (val: any) => {
+                    sub.unsubscribe();
+                    resolve(val);
+                },
                 error: reject,
                 complete: () => resolve(null),
             });

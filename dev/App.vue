@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { GraphiQL } from '../index';
-import '../src/style.css';
+
+import '~/src/style.css';
+import { GraphiQL } from '~/index';
 
 const theme = ref<'light' | 'dark'>('dark');
 
