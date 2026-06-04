@@ -93,42 +93,11 @@ function toggleField() {
 }
 
 function createFieldNode(): FieldNode {
-    const node: any = {
+    return {
         kind: Kind.FIELD,
         name: { kind: Kind.NAME, value: props.field.name },
         arguments: [],
-    };
-
-    if (hasSubFields.value && namedType.value) {
-        const fields = getFields(namedType.value);
-        if (fields) {
-            const defaultFieldNames = getDefaultFieldNamesForType(fields);
-            node.selectionSet = {
-                kind: Kind.SELECTION_SET,
-                selections: defaultFieldNames.map((name: string) => ({
-                    kind: Kind.FIELD,
-                    name: { kind: Kind.NAME, value: name },
-                    arguments: [],
-                })),
-            };
-        }
-    }
-
-    return node;
-}
-
-function getDefaultFieldNamesForType(
-    fields: Record<string, GraphQLField<any, any>>
-): string[] {
-    const fieldNames = Object.keys(fields);
-    if (fieldNames.includes('id')) return ['id'];
-    if (fieldNames.includes('edges')) return ['edges'];
-    if (fieldNames.includes('node')) return ['node'];
-    const leafFields = fieldNames.filter((n) => {
-        const named = getNamedType(fields[n].type);
-        return named ? isLeafType(named) : false;
-    });
-    return leafFields.length > 0 ? leafFields.slice(0, 2) : ['__typename'];
+    } as any;
 }
 
 // When child selections change

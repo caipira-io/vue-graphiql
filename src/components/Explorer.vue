@@ -10,7 +10,7 @@ import type {
 import { inject, computed } from 'vue';
 
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
-import { parse, print, Kind } from '~/src/utils';
+import { parse, print, Kind, getNamedType } from '~/src/utils';
 
 import ExplorerField from '~/src/components/ExplorerField.vue';
 
@@ -71,10 +71,18 @@ function getRootTypeForOperation(
     return null;
 }
 
-function getFieldsForType(
-    type: GraphQLObjectType
-): Record<string, GraphQLField<any, any>> {
-    return type.getFields();
+function getSortedFields(type: GraphQLObjectType): GraphQLField<any, any>[] {
+    const fields = type.getFields();
+
+    return Object.values(fields)
+        .filter((field) => {
+            // Filter out self-referential fields (e.g. query: Query on the Query type)
+            // that would cause infinite nesting in the explorer tree
+            const namedReturnType = getNamedType(field.type);
+
+            return namedReturnType !== type;
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // When selections change in a definition, rebuild the document and update the editor
@@ -222,10 +230,8 @@ const hasSubscription = computed(() => !!schema.value?.getSubscriptionType());
                     class="pl-2"
                 >
                     <ExplorerField
-                        v-for="(field, fieldName) in getFieldsForType(
-                            getRootTypeForOperation(def)!
-                        )"
-                        :key="String(fieldName)"
+                        v-for="field in getSortedFields(getRootTypeForOperation(def)!)"
+                        :key="field.name"
                         :field="field"
                         :schema="schema!"
                         :selections="def.selectionSet?.selections ?? []"
