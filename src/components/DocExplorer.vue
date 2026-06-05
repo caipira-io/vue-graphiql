@@ -153,7 +153,7 @@ const fieldArgs = computed(() => {
             class="flex items-center gap-1 border-b border-(--gql-border) px-3 py-2"
         >
             <button
-                class="text-xs text-(--gql-primary) hover:underline"
+                class="text-(--gql-primary) hover:underline"
                 @click="pop()"
             >
                 &larr; {{ navStack[navStack.length - 2].name }}
@@ -169,12 +169,12 @@ const fieldArgs = computed(() => {
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search types..."
-                class="w-full rounded border border-(--gql-border) bg-(--gql-bg) px-2 py-1 text-xs text-(--gql-text) placeholder:text-(--gql-text-secondary) focus:border-(--gql-primary) focus:outline-none"
+                class="w-full rounded border border-(--gql-border) bg-(--gql-bg) px-2 py-1 text-(--gql-text) placeholder:text-(--gql-text-secondary) focus:border-(--gql-primary) focus:outline-none"
             />
         </div>
 
         <!-- Content -->
-        <div class="flex-1 overflow-auto px-3 py-2 text-xs">
+        <div class="flex-1 overflow-auto px-3 py-2">
             <!-- Search results -->
             <div v-if="searchQuery && navStack.length === 1">
                 <div
@@ -440,7 +440,7 @@ const fieldArgs = computed(() => {
                 </p>
                 <div
                     v-if="currentItem.def.deprecationReason"
-                    class="mb-3 text-xs text-orange-500"
+                    class="mb-3 text-orange-500"
                 >
                     Deprecated: {{ currentItem.def.deprecationReason }}
                 </div>

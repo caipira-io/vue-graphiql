@@ -150,7 +150,7 @@ onMounted(loadHistory);
         <div class="flex-1 overflow-auto">
             <div
                 v-if="allItems.length === 0"
-                class="px-3 py-4 text-center text-xs text-(--gql-text-secondary) italic"
+                class="px-3 py-4 text-center text-(--gql-text-secondary) italic"
             >
                 No history yet. Execute a query to see it here.
             </div>
@@ -181,7 +181,7 @@ onMounted(loadHistory);
                             class="h-3.5 w-3.5"
                         />
                     </button>
-                    <span class="flex-1 truncate text-xs text-(--gql-text)">{{
+                    <span class="flex-1 truncate text-(--gql-text)">{{
                         getItemLabel(item)
                     }}</span>
                     <button
@@ -230,7 +230,7 @@ onMounted(loadHistory);
                             class="h-3.5 w-3.5"
                         />
                     </button>
-                    <span class="flex-1 truncate text-xs text-(--gql-text)">{{
+                    <span class="flex-1 truncate text-(--gql-text)">{{
                         getItemLabel(item)
                     }}</span>
                     <button

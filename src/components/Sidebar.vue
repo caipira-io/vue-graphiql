@@ -117,7 +117,7 @@ function clearStorage() {
                             <label class="text-sm text-(--gql-text)">Theme</label>
                             <div class="flex gap-1 rounded bg-(--gql-surface) p-0.5">
                                 <button
-                                    class="rounded px-3 py-1 text-xs transition-colors"
+                                    class="rounded px-3 py-1 transition-colors"
                                     :class="
                                         store.theme.value === 'light'
                                             ? 'bg-(--gql-bg) text-(--gql-text) shadow-sm'
@@ -128,7 +128,7 @@ function clearStorage() {
                                     Light
                                 </button>
                                 <button
-                                    class="rounded px-3 py-1 text-xs transition-colors"
+                                    class="rounded px-3 py-1 transition-colors"
                                     :class="
                                         store.theme.value === 'dark'
                                             ? 'bg-(--gql-bg) text-(--gql-text) shadow-sm'
@@ -208,36 +208,31 @@ function clearStorage() {
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Execute Query</span>
-                            <kbd
-                                class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono text-xs"
+                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
                                 >Ctrl + Enter</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Prettify</span>
-                            <kbd
-                                class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono text-xs"
+                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
                                 >Ctrl + Shift + P</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Copy Query</span>
-                            <kbd
-                                class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono text-xs"
+                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
                                 >Ctrl + Shift + C</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Merge Fragments</span>
-                            <kbd
-                                class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono text-xs"
+                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
                                 >Ctrl + Shift + M</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Re-fetch Schema</span>
-                            <kbd
-                                class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono text-xs"
+                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
                                 >Ctrl + R</kbd
                             >
                         </div>

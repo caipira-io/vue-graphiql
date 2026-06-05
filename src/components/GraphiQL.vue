@@ -145,7 +145,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
 
 <template>
     <div
-        class="graphiql-container flex h-full w-full overflow-hidden text-sm"
+        class="graphiql-container flex h-full w-full overflow-hidden"
         :class="store.theme.value === 'dark' ? 'dark' : ''"
     >
         <!-- Sidebar -->
@@ -169,9 +169,9 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                     <div
                         class="flex h-10 shrink-0 items-center justify-between border-b border-(--gql-border) bg-(--gql-surface) px-3"
                     >
-                        <span class="truncate text-xs font-semibold text-(--gql-text)">{{
-                            store.visiblePlugin.value.title
-                        }}</span>
+                        <span class="truncate font-semibold text-(--gql-text)">
+                            {{ store.visiblePlugin.value.title }}
+                        </span>
                         <button
                             class="text-(--gql-text-seconday)] flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
                             @click="store.setVisiblePlugin(null)"
@@ -254,7 +254,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                             class="gql-drag-bar-v flex items-center gap-0 border-y border-(--gql-border) bg-(--gql-surface)"
                         >
                             <button
-                                class="px-3 py-1 text-xs transition-colors"
+                                class="px-3 py-1 transition-colors"
                                 :class="
                                     activeEditorTool === 'variables'
                                         ? 'font-medium text-(--gql-text)'
@@ -266,7 +266,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                             </button>
                             <button
                                 v-if="store.isHeadersEditorEnabled"
-                                class="px-3 py-1 text-xs transition-colors"
+                                class="px-3 py-1 transition-colors"
                                 :class="
                                     activeEditorTool === 'headers'
                                         ? 'font-medium text-(--gql-text)'
@@ -348,7 +348,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                         <!-- Fetch error banner -->
                         <div
                             v-if="store.fetchError.value"
-                            class="border-b border-red-200 bg-red-50 px-3 py-2 text-xs text-red-500 dark:border-red-900 dark:bg-red-950/20"
+                            class="border-b border-red-200 bg-red-50 px-3 py-2 text-red-500 dark:border-red-900 dark:bg-red-950/20"
                         >
                             {{ store.fetchError.value }}
                         </div>

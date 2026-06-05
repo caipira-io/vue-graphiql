@@ -15,7 +15,7 @@ const store = inject(GRAPHIQL_STORE_KEY)!;
             <button
                 v-for="(tab, index) in store.tabs.value"
                 :key="tab.id"
-                class="group relative flex items-center gap-1.5 px-3 h-9 text-xs border-r border-(--gql-border) min-w-0 max-w-40 transition-colors shrink-0"
+                class="group relative flex items-center gap-1.5 px-3 h-9 border-r border-(--gql-border) min-w-0 max-w-40 transition-colors shrink-0"
                 :class="
                     index === store.activeTabIndex.value
                         ? 'bg-(--gql-bg) text-(--gql-text) border-b-2 border-b-(--gql-primary)'

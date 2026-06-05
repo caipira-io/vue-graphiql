@@ -28,6 +28,9 @@
     --gql-string: #d64292;
     --gql-enum: #0b7285;
 
+    --gql-text-size: 14px;
+
+    font-size: var(--gql-text-size);
     color: var(--gql-text);
     background: var(--gql-bg);
     font-family:

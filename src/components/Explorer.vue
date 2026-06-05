@@ -194,7 +194,7 @@ const hasSubscription = computed(() => !!schema.value?.getSubscriptionType());
 </script>
 
 <template>
-    <div class="flex h-full flex-col text-xs">
+    <div class="flex h-full flex-col">
         <div
             v-if="!schema"
             class="px-3 py-4 text-center text-(--gql-text-secondary) italic"
