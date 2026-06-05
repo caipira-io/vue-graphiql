@@ -18,6 +18,7 @@ import {
     isObjectLikeType,
 } from '~/src/utils';
 
+import Icon from '~/src/components/Icon.vue';
 import ExplorerArg from '~/src/components/ExplorerArg.vue';
 
 const props = defineProps<{
@@ -164,19 +165,13 @@ const showChildren = computed(
                 class="flex h-4 w-4 shrink-0 items-center justify-center text-(--gql-text-secondary)"
                 @click.stop="onArrowClick"
             >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    class="h-3 w-3 transition-transform duration-150"
-                    :class="showChildren ? 'rotate-90' : ''"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z"
-                        clip-rule="evenodd"
-                    />
-                </svg>
+                <Icon
+                    name="chevron-right"
+                    :class="
+                        'h-3 w-3 transition-transform duration-150' +
+                        (showChildren ? ' rotate-90' : '')
+                    "
+                />
             </button>
 
             <!-- Checkbox for leaf types -->
@@ -185,19 +180,11 @@ const showChildren = computed(
                 class="flex h-4 w-4 shrink-0 items-center justify-center"
                 @click.stop="toggleField"
             >
-                <svg
+                <Icon
                     v-if="isSelected"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
+                    name="check"
                     class="h-3.5 w-3.5 text-(--gql-primary)"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z"
-                        clip-rule="evenodd"
-                    />
-                </svg>
+                />
                 <div
                     v-else
                     class="h-3 w-3 rounded-sm border border-(--gql-border)"

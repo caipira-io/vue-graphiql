@@ -5,6 +5,8 @@ import { inject, ref, computed, watch, onMounted } from 'vue';
 
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 
+import Icon from '~/src/components/Icon.vue';
+
 const store = inject(GRAPHIQL_STORE_KEY)!;
 
 // History items stored in localStorage
@@ -174,18 +176,10 @@ onMounted(loadHistory);
                         title="Unfavorite"
                         @click.stop="toggleFavorite(item, index)"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
+                        <Icon
+                            name="star"
                             class="h-3.5 w-3.5"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
+                        />
                     </button>
                     <span class="flex-1 truncate text-xs text-(--gql-text)">{{
                         getItemLabel(item)
@@ -194,16 +188,10 @@ onMounted(loadHistory);
                         class="shrink-0 text-(--gql-text-secondary) opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
                         @click.stop="deleteItem(item)"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 16 16"
-                            fill="currentColor"
+                        <Icon
+                            name="close"
                             class="h-3 w-3"
-                        >
-                            <path
-                                d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z"
-                            />
-                        </svg>
+                        />
                     </button>
                 </div>
             </div>
@@ -237,18 +225,10 @@ onMounted(loadHistory);
                         title="Favorite"
                         @click.stop="toggleFavorite(item, index)"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
+                        <Icon
+                            name="star-outline"
                             class="h-3.5 w-3.5"
-                        >
-                            <path
-                                d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z"
-                            />
-                        </svg>
+                        />
                     </button>
                     <span class="flex-1 truncate text-xs text-(--gql-text)">{{
                         getItemLabel(item)
@@ -257,16 +237,10 @@ onMounted(loadHistory);
                         class="shrink-0 text-(--gql-text-secondary) opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
                         @click.stop="deleteItem(item)"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 16 16"
-                            fill="currentColor"
+                        <Icon
+                            name="close"
                             class="h-3 w-3"
-                        >
-                            <path
-                                d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z"
-                            />
-                        </svg>
+                        />
                     </button>
                 </div>
             </div>

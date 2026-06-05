@@ -21,7 +21,7 @@ export interface TabState {
 
 export interface GraphiQLPlugin {
     title: string;
-    icon: Component;
+    icon: string;
     content: Component;
 }
 

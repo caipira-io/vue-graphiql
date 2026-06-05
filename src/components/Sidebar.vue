@@ -3,6 +3,8 @@ import { inject, ref, computed } from 'vue';
 
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 
+import Icon from '~/src/components/Icon.vue';
+
 const store = inject(GRAPHIQL_STORE_KEY)!;
 
 const showSettings = ref(false);
@@ -52,7 +54,10 @@ function clearStorage() {
             "
             @click="togglePlugin(plugin)"
         >
-            <component :is="plugin.icon" />
+            <Icon
+                :name="plugin.icon"
+                class="w-4 h-4"
+            />
         </button>
 
         <div class="flex-1" />
@@ -64,21 +69,10 @@ function clearStorage() {
             :class="{ 'animate-spin': store.isIntrospecting.value }"
             @click="store.introspect()"
         >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <Icon
+                name="refresh"
                 class="h-4 w-4"
-            >
-                <path
-                    fill-rule="evenodd"
-                    d="M15.312 11.424a5.5 5.5 0 01-9.375 2.12l-.708.709a6.5 6.5 0 0011.094-2.83h-1.011zM4.688 8.576a5.5 5.5 0 019.375-2.12l.708-.709A6.5 6.5 0 003.677 8.576h1.011z"
-                    clip-rule="evenodd"
-                />
-                <path
-                    d="M10 3.75a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 0110 3.75zM10 13a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 0110 13z"
-                />
-            </svg>
+            />
         </button>
 
         <!-- Keyboard shortcuts -->
@@ -87,18 +81,10 @@ function clearStorage() {
             class="flex h-8 w-8 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
             @click="showShortcuts = true"
         >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <Icon
+                name="keyboard-outline"
                 class="h-4 w-4"
-            >
-                <path
-                    fill-rule="evenodd"
-                    d="M2 4.75A2.75 2.75 0 014.75 2h10.5A2.75 2.75 0 0118 4.75v6.5A2.75 2.75 0 0115.25 14H4.75A2.75 2.75 0 012 11.25v-6.5zm2.75-1.25a1.25 1.25 0 00-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75zM5 6a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 015 6zm3 0a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 018 6zm3 0a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 0111 6zm3 0a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 0114 6zM6 9a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 016 9zm6 0a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 0112 9zM7.5 15.25a.75.75 0 000 1.5h5a.75.75 0 000-1.5h-5zM9 9a.75.75 0 01.75-.75h.5a.75.75 0 010 1.5h-.5A.75.75 0 019 9z"
-                    clip-rule="evenodd"
-                />
-            </svg>
+            />
         </button>
 
         <!-- Settings -->
@@ -107,18 +93,10 @@ function clearStorage() {
             class="flex h-8 w-8 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
             @click="showSettings = true"
         >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <Icon
+                name="cog"
                 class="h-4 w-4"
-            >
-                <path
-                    fill-rule="evenodd"
-                    d="M7.84 1.804A1 1 0 018.82 1h2.36a1 1 0 01.98.804l.331 1.652a6.993 6.993 0 011.929 1.115l1.598-.54a1 1 0 011.186.447l1.18 2.044a1 1 0 01-.205 1.251l-1.267 1.113a7.047 7.047 0 010 2.228l1.267 1.113a1 1 0 01.206 1.25l-1.18 2.045a1 1 0 01-1.187.447l-1.598-.54a6.993 6.993 0 01-1.929 1.115l-.33 1.652a1 1 0 01-.98.804H8.82a1 1 0 01-.98-.804l-.331-1.652a6.993 6.993 0 01-1.929-1.115l-1.598.54a1 1 0 01-1.186-.447l-1.18-2.044a1 1 0 01.205-1.251l1.267-1.114a7.05 7.05 0 010-2.227L1.821 7.773a1 1 0 01-.206-1.25l1.18-2.045a1 1 0 011.187-.447l1.598.54A6.993 6.993 0 017.51 3.456l.33-1.652zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                    clip-rule="evenodd"
-                />
-            </svg>
+            />
         </button>
 
         <!-- Settings Dialog -->

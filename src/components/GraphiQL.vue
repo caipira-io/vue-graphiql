@@ -2,7 +2,6 @@
 import type { GraphiQLPlugin, GraphiQLProps } from '~/src/types';
 
 import {
-    h,
     ref,
     watch,
     markRaw,
@@ -16,6 +15,7 @@ import { useDragResize } from '~/src/composables/useDragResize';
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 import { createGraphiQLStore } from '~/src/store';
 
+import Icon from '~/src/components/Icon.vue';
 import TabBar from '~/src/components/TabBar.vue';
 import Sidebar from '~/src/components/Sidebar.vue';
 import Toolbar from '~/src/components/Toolbar.vue';
@@ -23,15 +23,6 @@ import JsonEditor from '~/src/components/JsonEditor.vue';
 import QueryEditor from '~/src/components/QueryEditor.vue';
 import ExecuteButton from '~/src/components/ExecuteButton.vue';
 import ResponseEditor from '~/src/components/ResponseEditor.vue';
-
-// Async plugin components
-const DocExplorer = defineAsyncComponent(
-    () => import('~/src/components/DocExplorer.vue')
-);
-const HistoryPanel = defineAsyncComponent(
-    () => import('~/src/components/HistoryPanel.vue')
-);
-const Explorer = defineAsyncComponent(() => import('~/src/components/Explorer.vue'));
 
 const props = withDefaults(defineProps<GraphiQLProps>(), {
     theme: 'light',
@@ -45,86 +36,28 @@ const props = withDefaults(defineProps<GraphiQLProps>(), {
 const store = createGraphiQLStore(props);
 provide(GRAPHIQL_STORE_KEY, store);
 
-// ---- Plugin icons (inline SVG components) ----
-const ExplorerIcon = {
-    render() {
-        return h(
-            'svg',
-            {
-                xmlns: 'http://www.w3.org/2000/svg',
-                viewBox: '0 0 20 20',
-                fill: 'currentColor',
-                class: 'w-4 h-4',
-            },
-            [
-                h('path', {
-                    'fill-rule': 'evenodd',
-                    d: 'M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z',
-                    'clip-rule': 'evenodd',
-                }),
-            ]
-        );
-    },
-};
-
-const DocExplorerIcon = {
-    render() {
-        return h(
-            'svg',
-            {
-                xmlns: 'http://www.w3.org/2000/svg',
-                viewBox: '0 0 20 20',
-                fill: 'currentColor',
-                class: 'w-4 h-4',
-            },
-            [
-                h('path', {
-                    'fill-rule': 'evenodd',
-                    d: 'M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zM10 8a.75.75 0 01.75.75v1.5h1.5a.75.75 0 010 1.5h-1.5v1.5a.75.75 0 01-1.5 0v-1.5h-1.5a.75.75 0 010-1.5h1.5v-1.5A.75.75 0 0110 8z',
-                    'clip-rule': 'evenodd',
-                }),
-            ]
-        );
-    },
-};
-
-const HistoryIcon = {
-    render() {
-        return h(
-            'svg',
-            {
-                xmlns: 'http://www.w3.org/2000/svg',
-                viewBox: '0 0 20 20',
-                fill: 'currentColor',
-                class: 'w-4 h-4',
-            },
-            [
-                h('path', {
-                    'fill-rule': 'evenodd',
-                    d: 'M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z',
-                    'clip-rule': 'evenodd',
-                }),
-            ]
-        );
-    },
-};
-
 // ---- Register built-in plugins ----
 const builtinPlugins: GraphiQLPlugin[] = [
     {
         title: 'Explorer',
-        icon: markRaw(ExplorerIcon),
-        content: markRaw(Explorer),
+        icon: 'magnify',
+        content: markRaw(
+            defineAsyncComponent(() => import('~/src/components/Explorer.vue'))
+        ),
     },
     {
         title: 'Documentation Explorer',
-        icon: markRaw(DocExplorerIcon),
-        content: markRaw(DocExplorer),
+        icon: 'file-document-outline',
+        content: markRaw(
+            defineAsyncComponent(() => import('~/src/components/DocExplorer.vue'))
+        ),
     },
     {
         title: 'History',
-        icon: markRaw(HistoryIcon),
-        content: markRaw(HistoryPanel),
+        icon: 'clock-time-three-outline',
+        content: markRaw(
+            defineAsyncComponent(() => import('~/src/components/HistoryPanel.vue'))
+        ),
     },
 ];
 
@@ -248,16 +181,10 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                             class="text-(--gql-text-seconday)] flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
                             @click="store.setVisiblePlugin(null)"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 16 16"
-                                fill="currentColor"
+                            <Icon
+                                name="close"
                                 class="h-3.5 w-3.5"
-                            >
-                                <path
-                                    d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z"
-                                />
-                            </svg>
+                            />
                         </button>
                     </div>
                     <div class="min-h-0 flex-1 overflow-auto">
@@ -359,19 +286,13 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                                 class="mr-1 flex h-6 w-6 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:text-(--gql-text)"
                                 @click="toggleEditorTools()"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 16 16"
-                                    fill="currentColor"
-                                    class="h-3 w-3 transition-transform"
-                                    :class="editorToolsVisible ? '' : 'rotate-180'"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M11.78 9.78a.75.75 0 01-1.06 0L8 7.06 5.28 9.78a.75.75 0 01-1.06-1.06l3.25-3.25a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
+                                <Icon
+                                    name="chevron-up"
+                                    :class="
+                                        'h-3 w-3 transition-transform' +
+                                        (editorToolsVisible ? '' : ' rotate-180')
+                                    "
+                                />
                             </button>
                         </div>
 

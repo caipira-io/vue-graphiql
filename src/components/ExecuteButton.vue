@@ -3,6 +3,8 @@ import { inject, ref, computed } from 'vue';
 
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 
+import Icon from '~/src/components/Icon.vue';
+
 const store = inject(GRAPHIQL_STORE_KEY)!;
 
 const showDropdown = ref(false);
@@ -40,34 +42,16 @@ function runOperation(name: string | null) {
             "
             @click="handleClick"
         >
-            <!-- Play icon -->
-            <svg
+            <Icon
                 v-if="!isRunning"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                name="play"
                 class="w-5 h-5 ml-0.5"
-            >
-                <path
-                    d="M6.3 2.84A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.27l9.344-5.891a1.5 1.5 0 000-2.538L6.3 2.841z"
-                />
-            </svg>
-            <!-- Stop icon -->
-            <svg
+            />
+            <Icon
                 v-else
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                name="stop"
                 class="w-5 h-5"
-            >
-                <rect
-                    x="5.5"
-                    y="5.5"
-                    width="9"
-                    height="9"
-                    rx="1"
-                />
-            </svg>
+            />
         </button>
 
         <!-- Operation dropdown -->

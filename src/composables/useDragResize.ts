@@ -1,4 +1,3 @@
-import type { Ref } from 'vue';
 import type { StorageWrapper } from '~/src/types';
 
 import { ref, onMounted, onUnmounted } from 'vue';

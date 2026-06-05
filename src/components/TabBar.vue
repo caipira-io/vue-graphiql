@@ -3,6 +3,8 @@ import { inject } from 'vue';
 
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 
+import Icon from '~/src/components/Icon.vue';
+
 const store = inject(GRAPHIQL_STORE_KEY)!;
 </script>
 
@@ -27,16 +29,10 @@ const store = inject(GRAPHIQL_STORE_KEY)!;
                     class="shrink-0 w-4 h-4 rounded-sm flex items-center justify-center text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-border) opacity-0 group-hover:opacity-100 transition-opacity"
                     @click.stop="store.closeTab(index)"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
+                    <Icon
+                        name="close"
                         class="w-3 h-3"
-                    >
-                        <path
-                            d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z"
-                        />
-                    </svg>
+                    />
                 </span>
             </button>
         </div>
@@ -47,16 +43,10 @@ const store = inject(GRAPHIQL_STORE_KEY)!;
             class="flex items-center justify-center w-8 h-8 mx-1 rounded text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-hover) transition-colors shrink-0"
             @click="store.addTab()"
         >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
+            <Icon
+                name="plus"
                 class="w-4 h-4"
-            >
-                <path
-                    d="M8.75 3.75a.75.75 0 00-1.5 0v3.5h-3.5a.75.75 0 000 1.5h3.5v3.5a.75.75 0 001.5 0v-3.5h3.5a.75.75 0 000-1.5h-3.5v-3.5z"
-                />
-            </svg>
+            />
         </button>
     </div>
 </template>

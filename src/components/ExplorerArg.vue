@@ -24,6 +24,8 @@ import {
     getDefaultValueForType,
 } from '~/src/utils';
 
+import Icon from '~/src/components/Icon.vue';
+
 const props = defineProps<{
     arg: GraphQLArgument;
     schema: GraphQLSchema;
@@ -146,19 +148,11 @@ function onInputObjectFieldChange(fieldName: string, value: ValueNode) {
                 class="flex h-3 w-3 shrink-0 items-center justify-center"
                 @click="toggleArg"
             >
-                <svg
+                <Icon
                     v-if="isActive"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
+                    name="check"
                     class="h-3 w-3 text-(--gql-primary)"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z"
-                        clip-rule="evenodd"
-                    />
-                </svg>
+                />
                 <div
                     v-else
                     class="h-2.5 w-2.5 rounded-sm border border-(--gql-border)"
