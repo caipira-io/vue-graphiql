@@ -11,7 +11,7 @@ const store = inject(GRAPHIQL_STORE_KEY)!;
 <template>
     <div class="flex items-center h-10 border-b border-(--gql-border) bg-(--gql-surface)">
         <!-- Tabs -->
-        <div class="flex items-end flex-1 overflow-x-auto min-w-0 gap-0">
+        <div class="flex items-end overflow-x-auto min-w-0 gap-0">
             <button
                 v-for="(tab, index) in store.tabs.value"
                 :key="tab.id"
@@ -40,7 +40,7 @@ const store = inject(GRAPHIQL_STORE_KEY)!;
         <!-- Add tab button -->
         <button
             title="New Tab"
-            class="flex items-center justify-center w-8 h-8 mx-1 rounded text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-hover) transition-colors shrink-0"
+            class="flex items-center justify-center w-8 h-8 rounded text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-hover) transition-colors shrink-0"
             @click="store.addTab()"
         >
             <Icon
