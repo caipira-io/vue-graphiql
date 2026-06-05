@@ -15,8 +15,6 @@ const uri = `${store.instanceId}operation.graphql`;
 function onEditorMounted(editor: any) {
     store.editors.query = editor;
 
-    // Register keyboard shortcuts
-    const monaco = (window as any).monaco ?? editor._standaloneKeybindingService;
     // Ctrl+Enter - Execute
     editor.addAction({
         id: 'graphiql.run',
@@ -24,6 +22,7 @@ function onEditorMounted(editor: any) {
         keybindings: [2048 /* CtrlCmd */ | 3 /* Enter */],
         run: () => store.run(),
     });
+
     // Shift+Ctrl+P - Prettify
     editor.addAction({
         id: 'graphiql.prettify',
@@ -31,6 +30,7 @@ function onEditorMounted(editor: any) {
         keybindings: [2048 | 1024 /* Shift */ | 46 /* KeyP */],
         run: () => store.prettify(),
     });
+
     // Shift+Ctrl+C - Copy
     editor.addAction({
         id: 'graphiql.copy',
@@ -38,6 +38,7 @@ function onEditorMounted(editor: any) {
         keybindings: [2048 | 1024 | 33 /* KeyC */],
         run: () => store.copyQuery(),
     });
+
     // Shift+Ctrl+M - Merge
     editor.addAction({
         id: 'graphiql.merge',

@@ -57,7 +57,7 @@ function runOperation(name: string | null) {
         <!-- Operation dropdown -->
         <div
             v-if="showDropdown && hasMultipleOps"
-            class="absolute top-full left-1/2 -translate-x-1/2 mt-1 z-10 bg-(--gql-bg) border border-(--gql-border) rounded-lg shadow-xl py-1 min-w-40"
+            class="absolute top-full left-1/2 -translate-x-1/2 mt-1 z-10 bg-(--gql-primary) border border-(--gql-border) rounded-lg shadow-xl py-1 min-w-40"
         >
             <button
                 v-for="op in store.operations.value"

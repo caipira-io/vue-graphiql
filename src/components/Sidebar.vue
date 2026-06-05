@@ -39,7 +39,7 @@ function clearStorage() {
 
 <template>
     <div
-        class="flex flex-col items-center gap-1 border-r border-(--gql-border) bg-(--gql-surface) py-2"
+        class="flex flex-col items-center gap-1 border-r border-(--gql-border) bg-(--gql-primary) py-2"
     >
         <!-- Plugin buttons -->
         <button
@@ -107,7 +107,7 @@ function clearStorage() {
                 @click.self="showSettings = false"
             >
                 <div
-                    class="max-w-md min-w-80 rounded-lg border border-(--gql-border) bg-(--gql-bg) p-6 shadow-xl"
+                    class="max-w-md min-w-80 rounded-lg border border-(--gql-border) bg-(--gql-primary) p-6 shadow-xl"
                 >
                     <h2 class="mb-4 text-lg font-semibold text-(--gql-text)">Settings</h2>
 
@@ -115,12 +115,12 @@ function clearStorage() {
                         <!-- Theme -->
                         <div class="flex items-center justify-between">
                             <label class="text-sm text-(--gql-text)">Theme</label>
-                            <div class="flex gap-1 rounded bg-(--gql-surface) p-0.5">
+                            <div class="flex gap-1 rounded bg-(--gql-primary) p-0.5">
                                 <button
                                     class="rounded px-3 py-1 transition-colors"
                                     :class="
                                         store.theme.value === 'light'
-                                            ? 'bg-(--gql-bg) text-(--gql-text) shadow-sm'
+                                            ? 'bg-(--gql-primary) text-(--gql-text) shadow-sm'
                                             : 'text-(--gql-text-secondary)'
                                     "
                                     @click="store.setTheme('light')"
@@ -131,7 +131,7 @@ function clearStorage() {
                                     class="rounded px-3 py-1 transition-colors"
                                     :class="
                                         store.theme.value === 'dark'
-                                            ? 'bg-(--gql-bg) text-(--gql-text) shadow-sm'
+                                            ? 'bg-(--gql-primary) text-(--gql-text) shadow-sm'
                                             : 'text-(--gql-text-secondary)'
                                     "
                                     @click="store.setTheme('dark')"
@@ -182,7 +182,7 @@ function clearStorage() {
 
                     <div class="mt-4 flex justify-end">
                         <button
-                            class="rounded bg-(--gql-surface) px-4 py-1.5 text-sm text-(--gql-text) transition-colors hover:bg-(--gql-hover)"
+                            class="rounded bg-(--gql-primary) px-4 py-1.5 text-sm text-(--gql-text) transition-colors hover:bg-(--gql-hover)"
                             @click="showSettings = false"
                         >
                             Close
@@ -200,7 +200,7 @@ function clearStorage() {
                 @click.self="showShortcuts = false"
             >
                 <div
-                    class="max-w-md min-w-80 rounded-lg border border-(--gql-border) bg-(--gql-bg) p-6 shadow-xl"
+                    class="max-w-md min-w-80 rounded-lg border border-(--gql-border) bg-(--gql-primary) p-6 shadow-xl"
                 >
                     <h2 class="mb-4 text-lg font-semibold text-(--gql-text)">
                         Keyboard Shortcuts
@@ -208,38 +208,38 @@ function clearStorage() {
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Execute Query</span>
-                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
+                            <kbd class="rounded bg-(--gql-primary) px-2 py-0.5 font-mono"
                                 >Ctrl + Enter</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Prettify</span>
-                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
+                            <kbd class="rounded bg-(--gql-primary) px-2 py-0.5 font-mono"
                                 >Ctrl + Shift + P</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Copy Query</span>
-                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
+                            <kbd class="rounded bg-(--gql-primary) px-2 py-0.5 font-mono"
                                 >Ctrl + Shift + C</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Merge Fragments</span>
-                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
+                            <kbd class="rounded bg-(--gql-primary) px-2 py-0.5 font-mono"
                                 >Ctrl + Shift + M</kbd
                             >
                         </div>
                         <div class="flex justify-between text-(--gql-text)">
                             <span>Re-fetch Schema</span>
-                            <kbd class="rounded bg-(--gql-surface) px-2 py-0.5 font-mono"
+                            <kbd class="rounded bg-(--gql-primary) px-2 py-0.5 font-mono"
                                 >Ctrl + R</kbd
                             >
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">
                         <button
-                            class="rounded bg-(--gql-surface) px-4 py-1.5 text-sm text-(--gql-text) transition-colors hover:bg-(--gql-hover)"
+                            class="rounded bg-(--gql-primary) px-4 py-1.5 text-sm text-(--gql-text) transition-colors hover:bg-(--gql-hover)"
                             @click="showShortcuts = false"
                         >
                             Close

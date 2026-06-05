@@ -9,7 +9,7 @@ const store = inject(GRAPHIQL_STORE_KEY)!;
 </script>
 
 <template>
-    <div class="flex items-center h-10 border-b border-(--gql-border) bg-(--gql-surface)">
+    <div class="flex items-center h-10 border-b border-(--gql-border) bg-(--gql-primary)">
         <!-- Tabs -->
         <div class="flex items-end overflow-x-auto min-w-0 gap-0">
             <button
@@ -18,8 +18,8 @@ const store = inject(GRAPHIQL_STORE_KEY)!;
                 class="group relative flex items-center gap-1.5 px-3 h-9 border-r border-(--gql-border) min-w-0 max-w-40 transition-colors shrink-0"
                 :class="
                     index === store.activeTabIndex.value
-                        ? 'bg-(--gql-bg) text-(--gql-text) border-b-2 border-b-(--gql-primary)'
-                        : 'bg-(--gql-surface) text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-hover)'
+                        ? 'bg-(--gql-primary) text-(--gql-text) border-b-2 border-b-(--gql-primary)'
+                        : 'bg-(--gql-primary) text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-hover)'
                 "
                 @click="store.changeTab(index)"
             >

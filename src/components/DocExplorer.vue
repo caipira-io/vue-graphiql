@@ -169,7 +169,7 @@ const fieldArgs = computed(() => {
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search types..."
-                class="w-full rounded border border-(--gql-border) bg-(--gql-bg) px-2 py-1 text-(--gql-text) placeholder:text-(--gql-text-secondary) focus:border-(--gql-primary) focus:outline-none"
+                class="w-full rounded border border-(--gql-border) bg-(--gql-primary) px-2 py-1 text-(--gql-text) placeholder:text-(--gql-text-secondary) focus:border-(--gql-primary) focus:outline-none"
             />
         </div>
 

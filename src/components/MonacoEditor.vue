@@ -136,7 +136,7 @@ defineExpose({
 
 <template>
     <div
+        class="size-full min-w-0 min-h-0"
         ref="containerRef"
-        class="size-full min-h-0"
     />
 </template>

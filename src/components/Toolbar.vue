@@ -4,12 +4,16 @@ import { inject } from 'vue';
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 
 import Icon from '~/src/components/Icon.vue';
+import ExecuteButton from '~/src/components/ExecuteButton.vue';
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
 </script>
 
 <template>
     <div class="flex flex-col items-center gap-1.5 py-2">
+        <!-- Execute button -->
+        <ExecuteButton class="py-2" />
+
         <!-- Prettify -->
         <button
             title="Prettify (Ctrl+Shift+P)"

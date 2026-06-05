@@ -3,15 +3,15 @@ import type { GraphiQLPlugin, GraphiQLProps } from '~/src/types';
 
 import {
     ref,
-    watch,
     markRaw,
     provide,
     onMounted,
     onUnmounted,
+    useTemplateRef,
     defineAsyncComponent,
 } from 'vue';
 
-import { useDragResize } from '~/src/composables/useDragResize';
+import split from 'split-grid';
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 import { createGraphiQLStore } from '~/src/store';
 
@@ -21,7 +21,7 @@ import Sidebar from '~/src/components/Sidebar.vue';
 import Toolbar from '~/src/components/Toolbar.vue';
 import JsonEditor from '~/src/components/JsonEditor.vue';
 import QueryEditor from '~/src/components/QueryEditor.vue';
-import ExecuteButton from '~/src/components/ExecuteButton.vue';
+import SplitGutter from '~/src/components/SplitGutter.vue';
 import ResponseEditor from '~/src/components/ResponseEditor.vue';
 
 const props = withDefaults(defineProps<GraphiQLProps>(), {
@@ -35,6 +35,11 @@ const props = withDefaults(defineProps<GraphiQLProps>(), {
 // Create and provide the store
 const store = createGraphiQLStore(props);
 provide(GRAPHIQL_STORE_KEY, store);
+
+// split-grid
+const gutter1 = useTemplateRef<InstanceType<typeof SplitGutter>>('gutter1');
+const gutter2 = useTemplateRef<InstanceType<typeof SplitGutter>>('gutter2');
+const gutter3 = useTemplateRef<InstanceType<typeof SplitGutter>>('gutter3');
 
 // ---- Register built-in plugins ----
 const builtinPlugins: GraphiQLPlugin[] = [
@@ -72,58 +77,6 @@ if ((store as any)._restorePlugins) {
 const activeEditorTool = ref<'variables' | 'headers'>('variables');
 const editorToolsVisible = ref(true);
 
-// ---- Resize: plugin panel vs sessions ----
-const pluginResize = useDragResize({
-    direction: 'horizontal',
-    defaultSizeRelation: 0.4,
-    initiallyHidden: store.visiblePlugin.value ? null : 'first',
-    sizeThresholdFirst: 120,
-    sizeThresholdSecond: 200,
-    storageKey: 'pluginFlex',
-    storage: store.storage,
-    onHiddenElementChange(element) {
-        if (element === 'first') {
-            store.setVisiblePlugin(null);
-        }
-    },
-});
-
-// ---- Resize: editors vs response ----
-const editorResize = useDragResize({
-    direction: 'horizontal',
-    defaultSizeRelation: 1,
-    storageKey: 'editorFlex',
-    storage: store.storage,
-});
-
-// ---- Resize: query editor vs editor tools ----
-const editorToolsResize = useDragResize({
-    direction: 'vertical',
-    defaultSizeRelation: 3,
-    storageKey: 'editorToolsFlex',
-    storage: store.storage,
-    initiallyHidden: editorToolsVisible.value ? null : 'second',
-    onHiddenElementChange(element) {
-        editorToolsVisible.value = element !== 'second';
-    },
-});
-
-// ---- Sync plugin visibility with resize ----
-watch(
-    () => store.visiblePlugin.value,
-    (plugin) => {
-        if (plugin && pluginResize.hiddenElement.value === 'first') {
-            pluginResize.setHiddenElement(null);
-        } else if (!plugin && pluginResize.hiddenElement.value !== 'first') {
-            pluginResize.setHiddenElement('first');
-        }
-    }
-);
-
-function toggleEditorTools() {
-    editorToolsResize.setHiddenElement(editorToolsVisible.value ? 'second' : null);
-}
-
 // ---- Lifecycle ----
 onMounted(async () => {
     // Introspect schema on mount
@@ -139,7 +92,24 @@ function onKeyDown(e: KeyboardEvent) {
     }
 }
 
-onMounted(() => document.addEventListener('keydown', onKeyDown));
+onMounted(() => {
+    document.addEventListener('keydown', onKeyDown);
+
+    // Each grid container needs its own split() instance
+    // because split-grid keys gutters by track in a flat map
+    split({
+        columnGutters: [{ track: 1, element: gutter1.value!.getElement() }],
+    });
+
+    split({
+        columnGutters: [{ track: 1, element: gutter2.value!.getElement() }],
+    });
+
+    split({
+        rowGutters: [{ track: 1, element: gutter3.value!.getElement() }],
+        rowMinSizes: { 0: 40, 1: 40 },
+    });
+});
 onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
 </script>
 
@@ -152,22 +122,18 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
         <Sidebar />
 
         <!-- Main area -->
-        <div class="flex min-h-0 min-w-0 flex-1">
+        <div
+            class="grid min-h-0 min-w-0 flex-1"
+            style="grid-template-columns: 280px 1px 1fr"
+        >
             <!-- Plugin panel -->
-            <div
-                :ref="
-                    (el) => {
-                        pluginResize.firstRef.value = el as HTMLElement;
-                    }
-                "
-                class="flex min-h-0 min-w-0 flex-col overflow-hidden border-r border-(--gql-border)"
-            >
+            <div class="flex flex-col overflow-hidden border-r border-(--gql-border)">
                 <div
                     v-if="store.visiblePlugin.value"
                     class="flex h-full flex-col"
                 >
                     <div
-                        class="flex h-10 shrink-0 items-center justify-between border-b border-(--gql-border) bg-(--gql-surface) px-3"
+                        class="flex h-10 shrink-0 items-center justify-between border-b border-(--gql-border) bg-(--gql-primary) px-3"
                     >
                         <span class="truncate font-semibold text-(--gql-text)">
                             {{ store.visiblePlugin.value.title }}
@@ -188,157 +154,117 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                 </div>
             </div>
 
-            <!-- Plugin resize handle -->
-            <div
-                :ref="
-                    (el) => {
-                        pluginResize.dragBarRef.value = el as HTMLElement;
-                    }
-                "
-                class="gql-drag-bar-h"
+            <!-- Resize handle -->
+            <SplitGutter
+                type="column"
+                ref="gutter1"
             />
 
-            <!-- Sessions area -->
-            <div
-                :ref="
-                    (el) => {
-                        pluginResize.secondRef.value = el as HTMLElement;
-                    }
-                "
-                class="flex min-h-0 min-w-0 flex-1 flex-col"
-            >
+            <!-- Main content -->
+            <div class="flex flex-col min-w-0">
                 <!-- Tab bar -->
                 <TabBar />
 
-                <!-- Session content -->
-                <div class="flex min-h-0 min-w-0 flex-1">
-                    <!-- Editors panel -->
+                <!-- Tab content -->
+                <div
+                    class="flex-1 grid min-h-0"
+                    style="grid-template-columns: 1fr 1px 1fr"
+                >
+                    <!-- Editor -->
                     <div
-                        :ref="
-                            (el) => {
-                                editorResize.firstRef.value = el as HTMLElement;
-                            }
-                        "
-                        class="flex min-h-0 min-w-0 flex-col"
+                        class="grid min-w-0 overflow-hidden"
+                        style="grid-template-rows: 1fr 1px 1fr"
                     >
                         <!-- Query editor + toolbar -->
-                        <div
-                            :ref="
-                                (el) => {
-                                    editorToolsResize.firstRef.value = el as HTMLElement;
-                                }
-                            "
-                            class="flex min-h-0"
-                        >
-                            <div class="min-h-0 min-w-0 flex-1">
-                                <QueryEditor />
-                            </div>
-                            <div
-                                class="flex flex-col items-center border-l border-(--gql-border) bg-(--gql-surface)"
-                            >
-                                <div class="py-2">
-                                    <ExecuteButton />
-                                </div>
-                                <Toolbar />
-                            </div>
+                        <div class="grid grid-cols-[1fr_40px] min-w-0 min-h-0">
+                            <QueryEditor />
+                            <Toolbar class="border-l border-(--gql-border)" />
                         </div>
 
-                        <!-- Editor tools tabs -->
-                        <div
-                            :ref="
-                                (el) => {
-                                    editorToolsResize.dragBarRef.value =
-                                        el as HTMLElement;
-                                }
-                            "
-                            class="gql-drag-bar-v flex items-center gap-0 border-y border-(--gql-border) bg-(--gql-surface)"
-                        >
-                            <button
-                                class="px-3 py-1 transition-colors"
-                                :class="
-                                    activeEditorTool === 'variables'
-                                        ? 'font-medium text-(--gql-text)'
-                                        : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
-                                "
-                                @click="activeEditorTool = 'variables'"
+                        <SplitGutter
+                            type="row"
+                            ref="gutter3"
+                        />
+
+                        <!-- Variables/Headers -->
+                        <div class="min-w-0 min-h-0">
+                            <!-- Header -->
+                            <div
+                                class="flex items-center gap-0 border-y border-(--gql-border)"
                             >
-                                Variables
-                            </button>
-                            <button
-                                v-if="store.isHeadersEditorEnabled"
-                                class="px-3 py-1 transition-colors"
-                                :class="
-                                    activeEditorTool === 'headers'
-                                        ? 'font-medium text-(--gql-text)'
-                                        : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
-                                "
-                                @click="activeEditorTool = 'headers'"
-                            >
-                                Headers
-                            </button>
-                            <div class="flex-1" />
-                            <button
-                                class="mr-1 flex h-6 w-6 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:text-(--gql-text)"
-                                @click="toggleEditorTools()"
-                            >
-                                <Icon
-                                    name="chevron-up"
+                                <button
+                                    class="px-3 py-1 transition-colors"
                                     :class="
-                                        'h-3 w-3 transition-transform' +
-                                        (editorToolsVisible ? ' rotate-180' : '')
+                                        activeEditorTool === 'variables'
+                                            ? 'font-medium text-(--gql-text)'
+                                            : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
                                     "
-                                />
-                            </button>
-                        </div>
-
-                        <!-- Editor tools content -->
-                        <div
-                            :ref="
-                                (el) => {
-                                    editorToolsResize.secondRef.value = el as HTMLElement;
-                                }
-                            "
-                            class="min-h-0"
-                        >
-                            <div
-                                class="size-full"
-                                :class="activeEditorTool === 'variables' ? '' : 'hidden'"
-                            >
-                                <JsonEditor mode="variable" />
+                                    @click="activeEditorTool = 'variables'"
+                                >
+                                    Variables
+                                </button>
+                                <button
+                                    v-if="store.isHeadersEditorEnabled"
+                                    class="px-3 py-1 transition-colors"
+                                    :class="
+                                        activeEditorTool === 'headers'
+                                            ? 'font-medium text-(--gql-text)'
+                                            : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
+                                    "
+                                    @click="activeEditorTool = 'headers'"
+                                >
+                                    Headers
+                                </button>
+                                <div class="flex-1" />
+                                <button
+                                    class="mr-1 flex h-6 w-6 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:text-(--gql-text)"
+                                    @click=""
+                                >
+                                    <Icon
+                                        name="chevron-up"
+                                        :class="
+                                            'h-3 w-3 transition-transform' +
+                                            (editorToolsVisible ? ' rotate-180' : '')
+                                        "
+                                    />
+                                </button>
                             </div>
-                            <div
-                                v-if="store.isHeadersEditorEnabled"
-                                class="size-full"
-                                :class="activeEditorTool === 'headers' ? '' : 'hidden'"
-                            >
-                                <JsonEditor mode="header" />
+
+                            <!-- Content -->
+                            <div class="min-h-0">
+                                <div
+                                    class="size-full"
+                                    :class="
+                                        activeEditorTool === 'variables' ? '' : 'hidden'
+                                    "
+                                >
+                                    <JsonEditor mode="variable" />
+                                </div>
+                                <div
+                                    v-if="store.isHeadersEditorEnabled"
+                                    class="size-full"
+                                    :class="
+                                        activeEditorTool === 'headers' ? '' : 'hidden'
+                                    "
+                                >
+                                    <JsonEditor mode="header" />
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Editor/Response resize handle -->
-                    <div
-                        :ref="
-                            (el) => {
-                                editorResize.dragBarRef.value = el as HTMLElement;
-                            }
-                        "
-                        class="gql-drag-bar-h"
+                    <!-- Resize handle -->
+                    <SplitGutter
+                        type="column"
+                        ref="gutter2"
                     />
 
-                    <!-- Response panel -->
-                    <div
-                        :ref="
-                            (el) => {
-                                editorResize.secondRef.value = el as HTMLElement;
-                            }
-                        "
-                        class="relative flex min-h-0 min-w-0 flex-col"
-                    >
+                    <!-- Response -->
+                    <div class="min-w-0">
                         <!-- Loading spinner overlay -->
                         <div
                             v-if="store.isFetching.value"
-                            class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-(--gql-bg)/50"
+                            class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-(--gql-primary)/50"
                         >
                             <div
                                 class="h-6 w-6 animate-spin rounded-full border-2 border-(--gql-primary) border-t-transparent"

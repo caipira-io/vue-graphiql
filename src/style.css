@@ -1,103 +1,68 @@
 @import 'tailwindcss';
 
-/*
- * GraphiQL Vue - Theme Variables
- * Uses CSS custom properties for light/dark theming.
- * These cascade from the .graphiql-container element.
- */
+@custom-variant dark (&:where(.dark, .dark *));
 
-.graphiql-container {
-    /* Light theme (default) */
-    --gql-bg: #ffffff;
-    --gql-surface: #f6f8fa;
-    --gql-border: #d1d5db;
-    --gql-hover: #f0f0f0;
-    --gql-text: #1f2937;
-    --gql-text-secondary: #6b7280;
-    --gql-primary: hsl(var(--primary-h, 221) var(--primary-s, 83%) var(--primary-l, 53%));
-    --gql-primary-hover: hsl(
-        var(--primary-h, 221) var(--primary-s, 83%) calc(var(--primary-l, 53%) - 5%)
-    );
-
-    /* Syntax colors - light */
-    --gql-keyword: #b62e71;
-    --gql-def: #ca9800;
-    --gql-field: #1f61a0;
-    --gql-arg: #8b5cf6;
-    --gql-type: #ca9800;
-    --gql-string: #d64292;
-    --gql-enum: #0b7285;
-
+/* Theme */
+.graphiql-container,
+:root {
+    --primary-h: 0;
+    --primary-s: 0%;
+    --gql-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+    --gql-border: hsl(var(--primary-h) var(--primary-s) var(--border-l));
     --gql-text-size: 14px;
+
+    &:not(.dark) {
+        --primary-l: 100%;
+        --border-l: 85%;
+
+        --gql-hover: #f0f0f0;
+        --gql-text: #1f2937;
+        --gql-text-secondary: #6b7280;
+
+        /* Syntax colors */
+        --gql-keyword: #b62e71;
+        --gql-def: #ca9800;
+        --gql-field: #1f61a0;
+        --gql-arg: #8b5cf6;
+        --gql-type: #ca9800;
+        --gql-string: #d64292;
+        --gql-enum: #0b7285;
+    }
+
+    &.dark {
+        --primary-l: 5%;
+        --border-l: 30%;
+
+        --gql-hover: #1c2128;
+        --gql-text: #e6edf3;
+        --gql-text-secondary: #8b949e;
+
+        /* Syntax colors */
+        --gql-keyword: #f472b6;
+        --gql-def: #e0a825;
+        --gql-field: #7cb4f0;
+        --gql-arg: #a78bfa;
+        --gql-type: #e0a825;
+        --gql-string: #e57eb0;
+        --gql-enum: #22d3ee;
+    }
 
     font-size: var(--gql-text-size);
     color: var(--gql-text);
-    background: var(--gql-bg);
-    font-family:
-        system-ui,
-        -apple-system,
-        'Segoe UI',
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
+    background-color: var(--gql-primary);
 }
 
-.graphiql-container.dark {
-    --gql-bg: #0d1117;
-    --gql-surface: #161b22;
-    --gql-border: #30363d;
-    --gql-hover: #1c2128;
-    --gql-text: #e6edf3;
-    --gql-text-secondary: #8b949e;
-
-    /* Syntax colors - dark */
-    --gql-keyword: #f472b6;
-    --gql-def: #e0a825;
-    --gql-field: #7cb4f0;
-    --gql-arg: #a78bfa;
-    --gql-type: #e0a825;
-    --gql-string: #e57eb0;
-    --gql-enum: #22d3ee;
-}
-
-/* Drag bar styles */
-.gql-drag-bar-h {
-    width: 5px;
-    cursor: col-resize;
-    background: transparent;
-    position: relative;
-    flex-shrink: 0;
-    z-index: 5;
-    transition: background-color 0.15s;
-}
-
-.gql-drag-bar-h:hover,
-.gql-drag-bar-h:active {
-    background: var(--gql-primary);
-    opacity: 0.4;
-}
-
-.gql-drag-bar-v {
-    cursor: row-resize;
-    min-height: 28px;
-    position: relative;
-    flex-shrink: 0;
-    z-index: 5;
-}
-
-/* Arg input styling (minimal, not easily doable with utility classes alone) */
+/* Arg input */
 .gql-arg-input {
     font-size: 11px;
     padding: 1px 4px;
     border: 1px solid var(--gql-border);
     border-radius: 3px;
-    background: var(--gql-bg);
+    background: var(--gql-primary);
     outline: none;
     min-width: 30px;
     max-width: 200px;
 }
-
 .gql-arg-input:focus {
     border-color: var(--gql-primary);
     box-shadow: 0 0 0 1px var(--gql-primary);

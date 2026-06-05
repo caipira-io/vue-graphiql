@@ -26,6 +26,7 @@ function onEditorMounted(editor: any) {
         keybindings: [2048 | 3],
         run: () => store.run(),
     });
+
     // Shift+Ctrl+P - Prettify
     editor.addAction({
         id: 'graphiql.prettify',
