@@ -121,12 +121,7 @@ watch(
 );
 
 function toggleEditorTools() {
-    if (editorToolsVisible.value) {
-        editorToolsResize.setHiddenElement('second');
-    } else {
-        editorToolsResize.setHiddenElement(null);
-    }
-    editorToolsVisible.value = !editorToolsVisible.value;
+    editorToolsResize.setHiddenElement(editorToolsVisible.value ? 'second' : null);
 }
 
 // ---- Lifecycle ----
@@ -290,7 +285,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                                     name="chevron-up"
                                     :class="
                                         'h-3 w-3 transition-transform' +
-                                        (editorToolsVisible ? '' : ' rotate-180')
+                                        (editorToolsVisible ? ' rotate-180' : '')
                                     "
                                 />
                             </button>

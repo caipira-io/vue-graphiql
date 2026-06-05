@@ -56,7 +56,6 @@ export function useDragResize(options: UseDragResizeOptions) {
         } else if (hiddenElement.value === 'second') {
             second.style.display = 'none';
             first.style.flex = '1';
-            if (dragBar) dragBar.style.display = 'none';
         } else {
             first.style.display = '';
             second.style.display = '';
