@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { GraphiQLPlugin, GraphiQLProps } from '~/src/types';
 
+import split from 'split-grid';
 import {
     ref,
     markRaw,
@@ -11,7 +12,6 @@ import {
     defineAsyncComponent,
 } from 'vue';
 
-import split from 'split-grid';
 import { GRAPHIQL_STORE_KEY } from '~/src/types';
 import { createGraphiQLStore } from '~/src/store';
 
@@ -187,10 +187,10 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                         />
 
                         <!-- Variables/Headers -->
-                        <div class="min-w-0 min-h-0">
+                        <div class="min-w-0 min-h-0 flex flex-col">
                             <!-- Header -->
                             <div
-                                class="flex items-center gap-0 border-y border-(--gql-border)"
+                                class="flex shrink-0 items-center gap-0 border-y border-(--gql-border)"
                             >
                                 <button
                                     class="px-3 py-1 transition-colors"
@@ -218,7 +218,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                                 <div class="flex-1" />
                                 <button
                                     class="mr-1 flex h-6 w-6 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:text-(--gql-text)"
-                                    @click=""
+                                    @click="editorToolsVisible = !editorToolsVisible"
                                 >
                                     <Icon
                                         name="chevron-up"
@@ -231,24 +231,21 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
                             </div>
 
                             <!-- Content -->
-                            <div class="min-h-0">
-                                <div
-                                    class="size-full"
-                                    :class="
-                                        activeEditorTool === 'variables' ? '' : 'hidden'
+                            <div
+                                v-if="editorToolsVisible"
+                                class="min-h-0 flex-1 overflow-hidden"
+                            >
+                                <JsonEditor
+                                    v-if="activeEditorTool === 'variables'"
+                                    mode="variable"
+                                />
+                                <JsonEditor
+                                    v-if="
+                                        store.isHeadersEditorEnabled &&
+                                        activeEditorTool === 'headers'
                                     "
-                                >
-                                    <JsonEditor mode="variable" />
-                                </div>
-                                <div
-                                    v-if="store.isHeadersEditorEnabled"
-                                    class="size-full"
-                                    :class="
-                                        activeEditorTool === 'headers' ? '' : 'hidden'
-                                    "
-                                >
-                                    <JsonEditor mode="header" />
-                                </div>
+                                    mode="header"
+                                />
                             </div>
                         </div>
                     </div>
