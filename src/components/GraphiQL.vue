@@ -103,11 +103,12 @@ onMounted(() => {
 
     split({
         columnGutters: [{ track: 1, element: gutter2.value!.getElement() }],
+        columnMinSizes: { 0: 40 },
     });
 
     split({
         rowGutters: [{ track: 1, element: gutter3.value!.getElement() }],
-        rowMinSizes: { 0: 40, 1: 40 },
+        rowMinSizes: { 2: 31 },
     });
 });
 onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
