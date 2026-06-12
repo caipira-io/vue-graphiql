@@ -174,7 +174,7 @@ const fieldArgs = computed(() => {
         </div>
 
         <!-- Content -->
-        <div class="flex-1 overflow-auto px-3 py-2">
+        <div class="flex-1 px-3 py-2">
             <!-- Search results -->
             <div v-if="searchQuery && navStack.length === 1">
                 <div

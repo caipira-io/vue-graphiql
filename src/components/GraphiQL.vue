@@ -128,30 +128,31 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
             style="grid-template-columns: 280px 1px 1fr"
         >
             <!-- Plugin panel -->
-            <div class="flex flex-col overflow-hidden border-r border-(--gql-border)">
+            <div
+                v-if="store.visiblePlugin.value"
+                class="flex flex-col overflow-hidden border-r border-(--gql-border)"
+            >
+                <!-- Header -->
                 <div
-                    v-if="store.visiblePlugin.value"
-                    class="flex h-full flex-col"
+                    class="flex h-10 shrink-0 items-center justify-between border-b border-(--gql-border) bg-(--gql-primary) px-3"
                 >
-                    <div
-                        class="flex h-10 shrink-0 items-center justify-between border-b border-(--gql-border) bg-(--gql-primary) px-3"
+                    <span class="truncate font-semibold text-(--gql-text)">
+                        {{ store.visiblePlugin.value.title }}
+                    </span>
+                    <button
+                        class="text-(--gql-text-seconday)] flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
+                        @click="store.setVisiblePlugin(null)"
                     >
-                        <span class="truncate font-semibold text-(--gql-text)">
-                            {{ store.visiblePlugin.value.title }}
-                        </span>
-                        <button
-                            class="text-(--gql-text-seconday)] flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
-                            @click="store.setVisiblePlugin(null)"
-                        >
-                            <Icon
-                                name="close"
-                                class="h-3.5 w-3.5"
-                            />
-                        </button>
-                    </div>
-                    <div class="min-h-0 flex-1 overflow-auto">
-                        <component :is="store.visiblePlugin.value.content" />
-                    </div>
+                        <Icon
+                            name="close"
+                            class="h-3.5 w-3.5"
+                        />
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="flex-1 overflow-y-auto overflow-x-hidden">
+                    <component :is="store.visiblePlugin.value.content" />
                 </div>
             </div>
 

@@ -147,102 +147,101 @@ onMounted(loadHistory);
 
 <template>
     <div class="flex h-full flex-col">
-        <div class="flex-1 overflow-auto">
-            <div
-                v-if="allItems.length === 0"
-                class="px-3 py-4 text-center text-(--gql-text-secondary) italic"
-            >
-                No history yet. Execute a query to see it here.
-            </div>
+        <!-- Header -->
+        <div
+            v-if="allItems.length === 0"
+            class="px-3 py-4 text-center text-(--gql-text-secondary) italic"
+        >
+            No history yet. Execute a query to see it here.
+        </div>
 
-            <!-- Favorites -->
-            <div
-                v-if="favoriteItems.length > 0"
-                class="px-3 py-2"
+        <!-- Favorites -->
+        <div
+            v-if="favoriteItems.length > 0"
+            class="px-3 py-2"
+        >
+            <h4
+                class="mb-1 text-[10px] font-semibold tracking-wider text-(--gql-text-secondary) uppercase"
             >
+                Favorites
+            </h4>
+            <div
+                v-for="(item, index) in favoriteItems"
+                :key="'fav-' + index"
+                class="group flex cursor-pointer items-center gap-1.5 rounded px-1 py-1.5 transition-colors hover:bg-(--gql-hover)"
+                @click="selectItem(item)"
+            >
+                <button
+                    class="shrink-0 text-yellow-400"
+                    title="Unfavorite"
+                    @click.stop="toggleFavorite(item, index)"
+                >
+                    <Icon
+                        name="star"
+                        class="h-3.5 w-3.5"
+                    />
+                </button>
+                <span class="flex-1 truncate text-(--gql-text)">{{
+                    getItemLabel(item)
+                }}</span>
+                <button
+                    class="shrink-0 text-(--gql-text-secondary) opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
+                    @click.stop="deleteItem(item)"
+                >
+                    <Icon
+                        name="close"
+                        class="h-3 w-3"
+                    />
+                </button>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div
+            v-if="historyItems.length > 0"
+            class="px-3 py-2"
+        >
+            <div class="mb-1 flex items-center justify-between">
                 <h4
-                    class="mb-1 text-[10px] font-semibold tracking-wider text-(--gql-text-secondary) uppercase"
+                    class="text-[10px] font-semibold tracking-wider text-(--gql-text-secondary) uppercase"
                 >
-                    Favorites
+                    History
                 </h4>
-                <div
-                    v-for="(item, index) in favoriteItems"
-                    :key="'fav-' + index"
-                    class="group flex cursor-pointer items-center gap-1.5 rounded px-1 py-1.5 transition-colors hover:bg-(--gql-hover)"
-                    @click="selectItem(item)"
+                <button
+                    class="text-[10px] text-(--gql-text-secondary) transition-colors hover:text-red-400"
+                    @click="clearHistory"
                 >
-                    <button
-                        class="shrink-0 text-yellow-400"
-                        title="Unfavorite"
-                        @click.stop="toggleFavorite(item, index)"
-                    >
-                        <Icon
-                            name="star"
-                            class="h-3.5 w-3.5"
-                        />
-                    </button>
-                    <span class="flex-1 truncate text-(--gql-text)">{{
-                        getItemLabel(item)
-                    }}</span>
-                    <button
-                        class="shrink-0 text-(--gql-text-secondary) opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
-                        @click.stop="deleteItem(item)"
-                    >
-                        <Icon
-                            name="close"
-                            class="h-3 w-3"
-                        />
-                    </button>
-                </div>
+                    Clear
+                </button>
             </div>
-
-            <!-- History -->
             <div
-                v-if="historyItems.length > 0"
-                class="px-3 py-2"
+                v-for="(item, index) in [...historyItems].reverse()"
+                :key="'hist-' + index"
+                class="group flex cursor-pointer items-center gap-1.5 rounded px-1 py-1.5 transition-colors hover:bg-(--gql-hover)"
+                @click="selectItem(item)"
             >
-                <div class="mb-1 flex items-center justify-between">
-                    <h4
-                        class="text-[10px] font-semibold tracking-wider text-(--gql-text-secondary) uppercase"
-                    >
-                        History
-                    </h4>
-                    <button
-                        class="text-[10px] text-(--gql-text-secondary) transition-colors hover:text-red-400"
-                        @click="clearHistory"
-                    >
-                        Clear
-                    </button>
-                </div>
-                <div
-                    v-for="(item, index) in [...historyItems].reverse()"
-                    :key="'hist-' + index"
-                    class="group flex cursor-pointer items-center gap-1.5 rounded px-1 py-1.5 transition-colors hover:bg-(--gql-hover)"
-                    @click="selectItem(item)"
+                <button
+                    class="shrink-0 text-(--gql-text-secondary) hover:text-yellow-400"
+                    title="Favorite"
+                    @click.stop="toggleFavorite(item, index)"
                 >
-                    <button
-                        class="shrink-0 text-(--gql-text-secondary) hover:text-yellow-400"
-                        title="Favorite"
-                        @click.stop="toggleFavorite(item, index)"
-                    >
-                        <Icon
-                            name="star-outline"
-                            class="h-3.5 w-3.5"
-                        />
-                    </button>
-                    <span class="flex-1 truncate text-(--gql-text)">{{
-                        getItemLabel(item)
-                    }}</span>
-                    <button
-                        class="shrink-0 text-(--gql-text-secondary) opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
-                        @click.stop="deleteItem(item)"
-                    >
-                        <Icon
-                            name="close"
-                            class="h-3 w-3"
-                        />
-                    </button>
-                </div>
+                    <Icon
+                        name="star-outline"
+                        class="h-3.5 w-3.5"
+                    />
+                </button>
+                <span class="flex-1 truncate text-(--gql-text)">{{
+                    getItemLabel(item)
+                }}</span>
+                <button
+                    class="shrink-0 text-(--gql-text-secondary) opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
+                    @click.stop="deleteItem(item)"
+                >
+                    <Icon
+                        name="close"
+                        class="h-3 w-3"
+                    />
+                </button>
             </div>
         </div>
     </div>

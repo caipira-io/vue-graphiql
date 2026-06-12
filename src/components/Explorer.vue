@@ -204,48 +204,52 @@ const hasSubscription = computed(() => !!schema.value?.getSubscriptionType());
         </div>
         <div
             v-else
-            class="flex-1 overflow-auto px-1 py-1"
+            class="flex min-h-0 flex-1 flex-col"
         >
-            <!-- Operation roots -->
-            <div
-                v-for="(def, defIndex) in effectiveDefinitions"
-                :key="defIndex"
-                class="mb-2"
-            >
-                <!-- Operation header -->
-                <div class="flex items-center gap-1 px-2 py-1">
-                    <span class="font-medium text-(--gql-keyword)">{{
-                        def.operation
-                    }}</span>
-                    <span
-                        v-if="def.name"
-                        class="text-(--gql-def)"
-                        >{{ def.name.value }}</span
-                    >
-                </div>
-
-                <!-- Fields -->
+            <!-- Operation roots (scrollable) -->
+            <div class="flex-1 overflow-y-auto px-1 py-1">
                 <div
-                    v-if="getRootTypeForOperation(def)"
-                    class="pl-2"
+                    v-for="(def, defIndex) in effectiveDefinitions"
+                    :key="defIndex"
+                    class="mb-2"
                 >
-                    <ExplorerField
-                        v-for="field in getSortedFields(getRootTypeForOperation(def)!)"
-                        :key="field.name"
-                        :field="field"
-                        :schema="schema!"
-                        :selections="def.selectionSet?.selections ?? []"
-                        :depth="0"
-                        @update:selections="
-                            (newSels) => onSelectionsChange(defIndex, newSels)
-                        "
-                    />
+                    <!-- Operation header -->
+                    <div class="flex items-center gap-1 px-2 py-1">
+                        <span class="font-medium text-(--gql-keyword)">
+                            {{ def.operation }}
+                        </span>
+                        <span
+                            v-if="def.name"
+                            class="text-(--gql-def)"
+                            >{{ def.name.value }}</span
+                        >
+                    </div>
+
+                    <!-- Fields -->
+                    <div
+                        v-if="getRootTypeForOperation(def)"
+                        class="pl-2"
+                    >
+                        <ExplorerField
+                            v-for="field in getSortedFields(
+                                getRootTypeForOperation(def)!
+                            )"
+                            :key="field.name"
+                            :field="field"
+                            :schema="schema!"
+                            :selections="def.selectionSet?.selections ?? []"
+                            :depth="0"
+                            @update:selections="
+                                (newSels) => onSelectionsChange(defIndex, newSels)
+                            "
+                        />
+                    </div>
                 </div>
             </div>
 
-            <!-- Add operation buttons -->
+            <!-- Add operation buttons (sticky bottom sliver) -->
             <div
-                class="border-(--gql-border)] mt-2 flex items-center gap-1 border-t px-2 py-2"
+                class="flex shrink-0 items-center gap-1 border-t border-(--gql-border) p-2"
             >
                 <button
                     v-if="hasQuery"
