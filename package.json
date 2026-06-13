@@ -12,6 +12,10 @@
         "type": "git",
         "url": "https://github.com/caipira-io/vue-graphiql.git"
     },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
     "scripts": {
         "dev": "vite",
         "typecheck": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json --composite false",
