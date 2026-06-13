@@ -108,7 +108,7 @@ onMounted(() => {
 
     split({
         rowGutters: [{ track: 1, element: gutter3.value!.getElement() }],
-        rowMinSizes: { 2: 31 },
+        rowMinSizes: { 0: 80, 2: 31 },
     });
 });
 onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
@@ -163,7 +163,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
             />
 
             <!-- Main content -->
-            <div class="flex flex-col min-w-0">
+            <div class="flex flex-col min-w-0 min-h-0">
                 <!-- Tab bar -->
                 <TabBar />
 
