@@ -1,6 +1,6 @@
 {
     "name": "@caipira/vue-graphiql",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "license": "MIT",
     "private": false,
     "description": "GraphiQL interactive in-browser GraphQL IDE for vue",
