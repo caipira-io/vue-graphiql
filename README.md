@@ -17,8 +17,9 @@ Configure the monaco editor worker in your `vite.config` file:
 
 ```ts
 import vue from '@vitejs/plugin-vue';
-import { monacoViteConfig } from '@caipira/vue-graphiql';
 import $monacoEditorPlugin from 'vite-plugin-monaco-editor';
+
+import { monacoViteConfig } from '@caipira/vue-graphiql';
 
 const monacoEditorPlugin = $monacoEditorPlugin.default || $monacoEditorPlugin;
 
@@ -31,10 +32,10 @@ Now you just need to import the component and the style file:
 
 ```vue
 <script lang="ts" setup>
-    import { GraphiQL } from '@caipira/vue-graphiql';
+import { GraphiQL } from '@caipira/vue-graphiql';
 
-    const theme = 'dark'; // light | dark, can be a computed prop, optional
-    const namespace = ''; // namespace local storage cache, optional
+const theme = 'dark'; // light | dark, can be a computed prop, optional
+const namespace = ''; // namespace local storage cache, optional
 </script>
 
 <template>
@@ -46,7 +47,7 @@ Now you just need to import the component and the style file:
 </template>
 
 <style>
-    @import '@caipira/vue-graphiql/style.css';
+@import '@caipira/vue-graphiql/style.css';
 </style>
 ```
 

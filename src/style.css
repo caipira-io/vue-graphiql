@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Theme */
+.graphiql-container,
+:root {
+    --primary-h: 0;
+    --primary-s: 0%;
+    --gql-primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+    --gql-border: hsl(var(--primary-h) var(--primary-s) var(--border-l));
+    --gql-text-size: 14px;
+
+    &:not(.dark) {
+        --primary-l: 100%;
+        --border-l: 85%;
+
+        --gql-hover: #f0f0f0;
+        --gql-text: #1f2937;
+        --gql-text-secondary: #6b7280;
+
+        /* Syntax colors */
+        --gql-keyword: #b62e71;
+        --gql-def: #ca9800;
+        --gql-field: #1f61a0;
+        --gql-arg: #8b5cf6;
+        --gql-type: #ca9800;
+        --gql-string: #d64292;
+        --gql-enum: #0b7285;
+    }
+
+    &.dark {
+        --primary-l: 5%;
+        --border-l: 30%;
+
+        --gql-hover: #1c2128;
+        --gql-text: #e6edf3;
+        --gql-text-secondary: #8b949e;
+
+        /* Syntax colors */
+        --gql-keyword: #f472b6;
+        --gql-def: #e0a825;
+        --gql-field: #7cb4f0;
+        --gql-arg: #a78bfa;
+        --gql-type: #e0a825;
+        --gql-string: #e57eb0;
+        --gql-enum: #22d3ee;
+    }
+
+    font-size: var(--gql-text-size);
+    color: var(--gql-text);
+    background-color: var(--gql-primary);
+}
+
+/* Arg input */
+.gql-arg-input {
+    font-size: 11px;
+    padding: 1px 4px;
+    border: 1px solid var(--gql-border);
+    border-radius: 3px;
+    background: var(--gql-primary);
+    outline: none;
+    min-width: 30px;
+    max-width: 200px;
+}
+.gql-arg-input:focus {
+    border-color: var(--gql-primary);
+    box-shadow: 0 0 0 1px var(--gql-primary);
+}
+
+/* Spinner animation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

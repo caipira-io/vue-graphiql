@@ -1,0 +1,52 @@
+<script setup lang="ts">
+import { inject } from 'vue';
+
+import { GRAPHIQL_STORE_KEY } from '~/src/types';
+
+import Icon from '~/src/components/Icon.vue';
+
+const store = inject(GRAPHIQL_STORE_KEY)!;
+</script>
+
+<template>
+    <div class="flex items-center h-10 border-b border-(--gql-border) bg-(--gql-primary)">
+        <!-- Tabs -->
+        <div class="flex items-end overflow-x-auto min-w-0 gap-0">
+            <button
+                v-for="(tab, index) in store.tabs.value"
+                :key="tab.id"
+                class="group relative flex items-center gap-1.5 px-3 h-9 border-r border-(--gql-border) min-w-0 max-w-40 transition-colors shrink-0"
+                :class="
+                    index === store.activeTabIndex.value
+                        ? 'bg-(--gql-primary) text-(--gql-text) border-b-2 border-b-(--gql-primary)'
+                        : 'bg-(--gql-primary) text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-hover)'
+                "
+                @click="store.changeTab(index)"
+            >
+                <span class="truncate">{{ tab.title || '(untitled)' }}</span>
+                <span
+                    v-if="store.tabs.value.length > 1"
+                    class="shrink-0 w-4 h-4 rounded-sm flex items-center justify-center text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-border) opacity-0 group-hover:opacity-100 transition-opacity"
+                    @click.stop="store.closeTab(index)"
+                >
+                    <Icon
+                        name="close"
+                        class="w-3 h-3"
+                    />
+                </span>
+            </button>
+        </div>
+
+        <!-- Add tab button -->
+        <button
+            title="New Tab"
+            class="flex items-center justify-center w-8 h-8 rounded text-(--gql-text-secondary) hover:text-(--gql-text) hover:bg-(--gql-hover) transition-colors shrink-0"
+            @click="store.addTab()"
+        >
+            <Icon
+                name="plus"
+                class="w-4 h-4"
+            />
+        </button>
+    </div>
+</template>
