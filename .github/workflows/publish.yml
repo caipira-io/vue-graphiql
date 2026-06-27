@@ -28,7 +28,16 @@ jobs:
               run: npm install -g npm@latest
 
             - name: Install dependencies
-              run: npm ci
+              run: npm i
+
+            - name: Ensure clean working tree
+              run: |
+                  if [[ -n "$(git status --porcelain)" ]]; then
+                      echo "Working tree is dirty before version bump. Resetting changes."
+                      git status --short
+                      git reset --hard
+                      git clean -fd
+                  fi
 
             - name: Set git user
               run: |

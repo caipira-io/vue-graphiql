@@ -21,7 +21,8 @@
         "typecheck": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json --composite false",
         "format": "prettier . --write",
         "build": "vite build --config build.config.mts",
-        "build:types": "vue-tsc --declaration --emitDeclarationOnly --skipLibCheck -p tsconfig.json"
+        "build:types": "vue-tsc --declaration --emitDeclarationOnly --skipLibCheck -p tsconfig.json",
+        "prepack": "npm run build"
     },
     "dependencies": {
         "@graphiql/toolkit": "^0.11.3",
