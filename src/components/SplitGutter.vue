@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import useSplitGutter from '~/src/composables/useSplitGutter';
+import useSplitGutter from '@/src/composables/useSplitGutter';
 
 const props = defineProps<{
     type: 'column' | 'row';

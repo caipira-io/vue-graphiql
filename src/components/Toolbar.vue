@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 
-import { GRAPHIQL_STORE_KEY } from '~/src/types';
+import { GRAPHIQL_STORE_KEY } from '@/src/store';
 
-import Icon from '~/src/components/Icon.vue';
-import ExecuteButton from '~/src/components/ExecuteButton.vue';
+import Icon from '@/src/components/Icon.vue';
+import ExecuteButton from '@/src/components/ExecuteButton.vue';
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
 </script>

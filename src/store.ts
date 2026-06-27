@@ -1,6 +1,7 @@
+import type { InjectionKey } from 'vue';
 import type { Unsubscribable } from '@graphiql/toolkit';
 import type { GraphQLSchema, DocumentNode, OperationDefinitionNode } from 'graphql';
-import type { GraphiQLStore, GraphiQLPlugin, TabState, GraphiQLProps } from '~/src/types';
+import type { GraphiQLStore, GraphiQLPlugin, TabState, GraphiQLProps } from '@/src/types';
 
 import { ref, shallowRef, computed, watch, markRaw } from 'vue';
 import { createGraphiQLFetcher, fillLeafs, mergeAst } from '@graphiql/toolkit';
@@ -19,7 +20,7 @@ import {
     serializeTabState,
     deserializeTabState,
     getSelectedOperationName,
-} from '~/src/utils';
+} from '@/src/utils';
 
 export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     const namespace = props.namespace ?? '';
@@ -591,3 +592,5 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
 
     return store;
 }
+
+export const GRAPHIQL_STORE_KEY: InjectionKey<GraphiQLStore> = Symbol('graphiql-store');

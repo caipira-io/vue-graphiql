@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue';
-
-import '~/src/style.css';
-import { GraphiQL } from '~/index';
-import { GRAPHIQL_STORE_KEY } from '~/src/types';
+import '@/assets/styles/index.css';
+import { ref } from 'vue';
+import { GraphiQL } from '@/index';
 
 const URL = import.meta.env.VITE_GRAPHQL_URL;
 const theme = ref<'light' | 'dark'>('dark');

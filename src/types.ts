@@ -1,6 +1,6 @@
 import type { editor } from 'monaco-editor';
 import type { Fetcher, Unsubscribable } from '@graphiql/toolkit';
-import type { Component, InjectionKey, Ref, ShallowRef, ComputedRef } from 'vue';
+import type { Component, Ref, ShallowRef, ComputedRef } from 'vue';
 import type {
     DocumentNode,
     GraphQLError,
@@ -124,5 +124,3 @@ export interface HistoryItem {
     label?: string;
     favorite?: boolean;
 }
-
-export const GRAPHIQL_STORE_KEY: InjectionKey<GraphiQLStore> = Symbol('graphiql-store');

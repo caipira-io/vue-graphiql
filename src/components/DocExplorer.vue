@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { DocExplorerNavItem } from '~/src/types';
+import type { DocExplorerNavItem } from '@/src/types';
 import type {
     GraphQLField,
     GraphQLInputType,
     GraphQLNamedType,
     GraphQLOutputType,
-} from '~/src/utils';
+} from '@/src/utils';
 
 import { inject, ref, computed } from 'vue';
 
-import { GRAPHIQL_STORE_KEY } from '~/src/types';
+import { GRAPHIQL_STORE_KEY } from '@/src/store';
 import {
     isEnumType,
     getTypeName,
@@ -19,7 +19,7 @@ import {
     isScalarType,
     isInterfaceType,
     isInputObjectType,
-} from '~/src/utils';
+} from '@/src/utils';
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
 

@@ -4,7 +4,7 @@ import type {
     GraphQLField,
     GraphQLSchema,
     SelectionSetNode,
-} from '~/src/utils';
+} from '@/src/utils';
 
 import { computed, ref } from 'vue';
 
@@ -16,10 +16,10 @@ import {
     isUnionType,
     getNamedType,
     isObjectLikeType,
-} from '~/src/utils';
+} from '@/src/utils';
 
-import Icon from '~/src/components/Icon.vue';
-import ExplorerArg from '~/src/components/ExplorerArg.vue';
+import Icon from '@/src/components/Icon.vue';
+import ExplorerArg from '@/src/components/ExplorerArg.vue';
 
 const props = defineProps<{
     field: GraphQLField<any, any>;

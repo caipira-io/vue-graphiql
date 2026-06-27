@@ -1,4 +1,4 @@
-import type { StorageWrapper, TabState } from '~/src/types';
+import type { StorageWrapper, TabState } from '@/src/types';
 import type {
     FieldNode,
     ValueNode,

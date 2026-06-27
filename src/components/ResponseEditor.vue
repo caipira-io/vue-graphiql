@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 
-import { GRAPHIQL_STORE_KEY } from '~/src/types';
+import { GRAPHIQL_STORE_KEY } from '@/src/store';
 
-import MonacoEditor from '~/src/components/MonacoEditor.vue';
+import MonacoEditor from '@/src/components/MonacoEditor.vue';
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
 

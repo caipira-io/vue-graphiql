@@ -1,6 +1,14 @@
 {
     "extends": "@vue/tsconfig/tsconfig.json",
-    "include": ["src/**/*.ts", "src/**/*.vue", "index.ts", "monaco-vite-config.ts"],
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.d.ts",
+        "src/**/*.vue",
+        "dev/**/*.ts",
+        "dev/**/*.vue",
+        "index.ts",
+        "monaco-vite-config.ts"
+    ],
     "compilerOptions": {
         "composite": false,
         "declaration": true,
@@ -15,7 +23,7 @@
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
         "skipLibCheck": true,
         "paths": {
-            "~/*": ["./*"]
+            "@/*": ["./*"]
         }
     }
 }

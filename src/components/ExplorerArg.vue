@@ -7,7 +7,7 @@ import type {
     GraphQLArgument,
     GraphQLEnumType,
     GraphQLInputObjectType,
-} from '~/src/utils';
+} from '@/src/utils';
 
 import { computed } from 'vue';
 
@@ -22,9 +22,9 @@ import {
     coerceArgValue,
     isInputObjectType,
     getDefaultValueForType,
-} from '~/src/utils';
+} from '@/src/utils';
 
-import Icon from '~/src/components/Icon.vue';
+import Icon from '@/src/components/Icon.vue';
 
 const props = defineProps<{
     arg: GraphQLArgument;

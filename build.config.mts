@@ -1,4 +1,7 @@
-import dts from 'vite-plugin-dts';
+import fs from 'fs';
+import path from 'path';
+
+import dts from 'unplugin-dts/vite';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
@@ -7,11 +10,18 @@ export default defineConfig({
     plugins: [
         vue(),
         tailwindcss(),
-        dts({
-            outDir: 'dist/types',
-            entryRoot: '.',
-            copyDtsFiles: false,
-        }),
+        dts({ outDirs: './dist/types' }),
+        {
+            name: 'emit-style',
+            writeBundle(options) {
+                const src = path.resolve(__dirname, './assets/styles/style.css');
+                const outDir = options.dir ?? 'dist';
+                const dest = path.resolve(outDir, 'style.css');
+
+                fs.mkdirSync(outDir, { recursive: true });
+                fs.copyFileSync(src, dest);
+            },
+        },
     ],
     resolve: {
         tsconfigPaths: true,

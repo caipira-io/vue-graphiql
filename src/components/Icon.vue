@@ -30,5 +30,8 @@ watch(
 </script>
 
 <template>
-    <i v-html="content" class="inline-flex items-center justify-center" />
+    <i
+        v-html="content"
+        class="inline-flex items-center justify-center"
+    />
 </template>

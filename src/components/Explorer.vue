@@ -5,14 +5,14 @@ import type {
     SelectionSetNode,
     GraphQLObjectType,
     OperationDefinitionNode,
-} from '~/src/utils';
+} from '@/src/utils';
 
 import { inject, computed } from 'vue';
 
-import { GRAPHIQL_STORE_KEY } from '~/src/types';
-import { parse, print, Kind, getNamedType } from '~/src/utils';
+import { GRAPHIQL_STORE_KEY } from '@/src/store';
+import { parse, print, Kind, getNamedType } from '@/src/utils';
 
-import ExplorerField from '~/src/components/ExplorerField.vue';
+import ExplorerField from '@/src/components/ExplorerField.vue';
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, inject } from 'vue';
 
-import { useMonaco } from '~/src/composables/useMonaco';
-import { GRAPHIQL_STORE_KEY } from '~/src/types';
+import { useMonaco } from '@/src/composables/useMonaco';
+import { GRAPHIQL_STORE_KEY } from '@/src/store';
 
 const props = withDefaults(
     defineProps<{

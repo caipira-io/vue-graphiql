@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GraphiQLPlugin, GraphiQLProps } from '~/src/types';
+import type { GraphiQLPlugin, GraphiQLProps } from '@/src/types';
 
 import split from 'split-grid';
 import {
@@ -12,17 +12,17 @@ import {
     defineAsyncComponent,
 } from 'vue';
 
-import { GRAPHIQL_STORE_KEY } from '~/src/types';
-import { createGraphiQLStore } from '~/src/store';
+import { GRAPHIQL_STORE_KEY } from '@/src/store';
+import { createGraphiQLStore } from '@/src/store';
 
-import Icon from '~/src/components/Icon.vue';
-import TabBar from '~/src/components/TabBar.vue';
-import Sidebar from '~/src/components/Sidebar.vue';
-import Toolbar from '~/src/components/Toolbar.vue';
-import JsonEditor from '~/src/components/JsonEditor.vue';
-import QueryEditor from '~/src/components/QueryEditor.vue';
-import SplitGutter from '~/src/components/SplitGutter.vue';
-import ResponseEditor from '~/src/components/ResponseEditor.vue';
+import Icon from '@/src/components/Icon.vue';
+import TabBar from '@/src/components/TabBar.vue';
+import Sidebar from '@/src/components/Sidebar.vue';
+import Toolbar from '@/src/components/Toolbar.vue';
+import JsonEditor from '@/src/components/JsonEditor.vue';
+import QueryEditor from '@/src/components/QueryEditor.vue';
+import SplitGutter from '@/src/components/SplitGutter.vue';
+import ResponseEditor from '@/src/components/ResponseEditor.vue';
 
 const props = withDefaults(defineProps<GraphiQLProps>(), {
     theme: 'light',
@@ -47,21 +47,21 @@ const builtinPlugins: GraphiQLPlugin[] = [
         title: 'Explorer',
         icon: 'magnify',
         content: markRaw(
-            defineAsyncComponent(() => import('~/src/components/Explorer.vue'))
+            defineAsyncComponent(() => import('@/src/components/Explorer.vue'))
         ),
     },
     {
         title: 'Documentation Explorer',
         icon: 'file-document-outline',
         content: markRaw(
-            defineAsyncComponent(() => import('~/src/components/DocExplorer.vue'))
+            defineAsyncComponent(() => import('@/src/components/DocExplorer.vue'))
         ),
     },
     {
         title: 'History',
         icon: 'clock-time-three-outline',
         content: markRaw(
-            defineAsyncComponent(() => import('~/src/components/HistoryPanel.vue'))
+            defineAsyncComponent(() => import('@/src/components/HistoryPanel.vue'))
         ),
     },
 ];
