@@ -24,13 +24,16 @@
         "build:types": "vue-tsc --declaration --emitDeclarationOnly --skipLibCheck -p tsconfig.json",
         "prepack": "npm run build"
     },
+    "sideEffects": [
+        "**/*.css"
+    ],
     "dependencies": {
         "@graphiql/toolkit": "^0.11.3",
-        "markdown-it": "^14.2.0",
-        "split-grid": "^1.0.11"
+        "markdown-it": "^14.2.0"
     },
     "devDependencies": {
         "@caipira/prettier-plugin-sort-imports": "^0.0.1",
+        "@caipira/tamandua": "^0.0.128",
         "@tailwindcss/vite": "^4.3.1",
         "@types/markdown-it": "^14.1.2",
         "@types/node": "^20.11.30",
@@ -44,8 +47,9 @@
         "prettier-plugin-tailwindcss": "^0.8.0",
         "ts-node": "^10.9.1",
         "typescript": "^6.0.3",
-        "vite": "^8.1.0",
         "unplugin-dts": "^1.0.3",
+        "vite": "^8.1.0",
+        "vite-plugin-lib-inject-css": "^2.2.2",
         "vite-plugin-monaco-editor": "^1.1.0",
         "vue": "^3.5.25",
         "vue-component-type-helpers": "^2.0.19",
@@ -55,9 +59,9 @@
         "graphql": "^16.0.0",
         "monaco-editor": ">=0.50.0",
         "monaco-graphql": "^1.7.0",
+        "tailwindcss": "^4.3.1",
         "vite": ">=4.0.0",
-        "vue": ">=3.0.0",
-        "tailwindcss": "^4.3.1"
+        "vue": ">=3.0.0"
     },
     "module": "dist/vue-graphiql.es.js",
     "types": "dist/types/index.d.ts",

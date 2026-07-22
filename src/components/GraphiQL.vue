@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import type { SplitPane } from '@caipira/tamandua';
 import type { GraphiQLPlugin, GraphiQLProps } from '@/src/types';
 
-import split from 'split-grid';
+import { Split } from '@caipira/tamandua/components/Split';
 import {
     ref,
     markRaw,
     provide,
+    computed,
     onMounted,
     onUnmounted,
-    useTemplateRef,
     defineAsyncComponent,
 } from 'vue';
 
@@ -21,7 +22,6 @@ import Sidebar from '@/src/components/Sidebar.vue';
 import Toolbar from '@/src/components/Toolbar.vue';
 import JsonEditor from '@/src/components/JsonEditor.vue';
 import QueryEditor from '@/src/components/QueryEditor.vue';
-import SplitGutter from '@/src/components/SplitGutter.vue';
 import ResponseEditor from '@/src/components/ResponseEditor.vue';
 
 const props = withDefaults(defineProps<GraphiQLProps>(), {
@@ -36,10 +36,24 @@ const props = withDefaults(defineProps<GraphiQLProps>(), {
 const store = createGraphiQLStore(props);
 provide(GRAPHIQL_STORE_KEY, store);
 
-// split-grid
-const gutter1 = useTemplateRef<InstanceType<typeof SplitGutter>>('gutter1');
-const gutter2 = useTemplateRef<InstanceType<typeof SplitGutter>>('gutter2');
-const gutter3 = useTemplateRef<InstanceType<typeof SplitGutter>>('gutter3');
+// Resizable panes; dragged sizes persist per namespace
+const splitKey = (suffix: string) => `${props.namespace}graphiql-split-${suffix}`;
+
+const outerPanes = computed<SplitPane[]>(() =>
+    store.visiblePlugin.value
+        ? [{ slot: 'plugin', size: '280px' }, { slot: 'main' }]
+        : [{ slot: 'main' }],
+);
+
+const middlePanes: SplitPane[] = [
+    { slot: 'editor', min: 40, class: 'overflow-hidden' },
+    { slot: 'response' },
+];
+
+const editorPanes: SplitPane[] = [
+    { slot: 'query', min: 80 },
+    { slot: 'tools', min: 31 },
+];
 
 // ---- Register built-in plugins ----
 const builtinPlugins: GraphiQLPlugin[] = [
@@ -94,22 +108,6 @@ function onKeyDown(e: KeyboardEvent) {
 
 onMounted(() => {
     document.addEventListener('keydown', onKeyDown);
-
-    // Each grid container needs its own split() instance
-    // because split-grid keys gutters by track in a flat map
-    split({
-        columnGutters: [{ track: 1, element: gutter1.value!.getElement() }],
-    });
-
-    split({
-        columnGutters: [{ track: 1, element: gutter2.value!.getElement() }],
-        columnMinSizes: { 0: 40 },
-    });
-
-    split({
-        rowGutters: [{ track: 1, element: gutter3.value!.getElement() }],
-        rowMinSizes: { 0: 80, 2: 31 },
-    });
 });
 onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
 </script>
@@ -123,165 +121,174 @@ onUnmounted(() => document.removeEventListener('keydown', onKeyDown));
         <Sidebar />
 
         <!-- Main area -->
-        <div
-            class="grid min-h-0 min-w-0 flex-1"
-            style="grid-template-columns: 280px 1px 1fr"
+        <Split
+            class="min-h-0 min-w-0 flex-1"
+            :panes="outerPanes"
+            :storage-key="splitKey('plugin')"
         >
             <!-- Plugin panel -->
-            <div
-                v-if="store.visiblePlugin.value"
-                class="flex flex-col overflow-hidden border-r border-(--gql-border)"
-            >
-                <!-- Header -->
+            <template #plugin>
                 <div
-                    class="flex h-10 shrink-0 items-center justify-between border-b border-(--gql-border) bg-(--gql-primary) px-3"
+                    class="flex flex-col overflow-hidden border-r border-(--gql-border)"
                 >
-                    <span class="truncate font-semibold text-(--gql-text)">
-                        {{ store.visiblePlugin.value.title }}
-                    </span>
-                    <button
-                        class="text-(--gql-text-seconday)] flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
-                        @click="store.setVisiblePlugin(null)"
+                    <!-- Header -->
+                    <div
+                        class="flex h-10 shrink-0 items-center justify-between border-b border-(--gql-border) bg-(--gql-primary) px-3"
                     >
-                        <Icon
-                            name="close"
-                            class="h-3.5 w-3.5"
+                        <span class="truncate font-semibold text-(--gql-text)">
+                            {{ store.visiblePlugin.value?.title }}
+                        </span>
+                        <button
+                            class="text-(--gql-text-seconday)] flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-(--gql-hover) hover:text-(--gql-text)"
+                            @click="store.setVisiblePlugin(null)"
+                        >
+                            <Icon
+                                name="close"
+                                class="h-3.5 w-3.5"
+                            />
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1 overflow-y-auto overflow-x-hidden">
+                        <component
+                            :is="store.visiblePlugin.value.content"
+                            v-if="store.visiblePlugin.value"
                         />
-                    </button>
+                    </div>
                 </div>
-
-                <!-- Content -->
-                <div class="flex-1 overflow-y-auto overflow-x-hidden">
-                    <component :is="store.visiblePlugin.value.content" />
-                </div>
-            </div>
-
-            <!-- Resize handle -->
-            <SplitGutter
-                type="column"
-                ref="gutter1"
-            />
+            </template>
 
             <!-- Main content -->
-            <div class="flex flex-col min-w-0 min-h-0">
-                <!-- Tab bar -->
-                <TabBar />
+            <template #main>
+                <div class="flex flex-col min-w-0 min-h-0">
+                    <!-- Tab bar -->
+                    <TabBar />
 
-                <!-- Tab content -->
-                <div
-                    class="flex-1 grid min-h-0"
-                    style="grid-template-columns: 1fr 1px 1fr"
-                >
-                    <!-- Editor -->
-                    <div
-                        class="grid min-w-0 overflow-hidden"
-                        style="grid-template-rows: 1fr 1px 1fr"
+                    <!-- Tab content -->
+                    <Split
+                        class="flex-1 min-h-0"
+                        :panes="middlePanes"
+                        :storage-key="splitKey('editors')"
                     >
-                        <!-- Query editor + toolbar -->
-                        <div class="grid grid-cols-[1fr_40px] min-w-0 min-h-0">
-                            <QueryEditor />
-                            <Toolbar class="border-l border-(--gql-border)" />
-                        </div>
-
-                        <SplitGutter
-                            type="row"
-                            ref="gutter3"
-                        />
-
-                        <!-- Variables/Headers -->
-                        <div class="min-w-0 min-h-0 flex flex-col">
-                            <!-- Header -->
-                            <div
-                                class="flex shrink-0 items-center gap-0 border-y border-(--gql-border)"
+                        <!-- Editor -->
+                        <template #editor>
+                            <Split
+                                direction="row"
+                                :panes="editorPanes"
+                                :storage-key="splitKey('tools')"
                             >
-                                <button
-                                    class="px-3 py-1 transition-colors"
-                                    :class="
-                                        activeEditorTool === 'variables'
-                                            ? 'font-medium text-(--gql-text)'
-                                            : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
-                                    "
-                                    @click="activeEditorTool = 'variables'"
+                                <!-- Query editor + toolbar -->
+                                <template #query>
+                                    <div
+                                        class="grid grid-cols-[1fr_40px] min-w-0 min-h-0"
+                                    >
+                                        <QueryEditor />
+                                        <Toolbar
+                                            class="border-l border-(--gql-border)"
+                                        />
+                                    </div>
+                                </template>
+
+                                <!-- Variables/Headers -->
+                                <template #tools>
+                                    <div class="min-w-0 min-h-0 flex flex-col">
+                                        <!-- Header -->
+                                        <div
+                                            class="flex shrink-0 items-center gap-0 border-y border-(--gql-border)"
+                                        >
+                                            <button
+                                                class="px-3 py-1 transition-colors"
+                                                :class="
+                                                    activeEditorTool === 'variables'
+                                                        ? 'font-medium text-(--gql-text)'
+                                                        : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
+                                                "
+                                                @click="activeEditorTool = 'variables'"
+                                            >
+                                                Variables
+                                            </button>
+                                            <button
+                                                v-if="store.isHeadersEditorEnabled"
+                                                class="px-3 py-1 transition-colors"
+                                                :class="
+                                                    activeEditorTool === 'headers'
+                                                        ? 'font-medium text-(--gql-text)'
+                                                        : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
+                                                "
+                                                @click="activeEditorTool = 'headers'"
+                                            >
+                                                Headers
+                                            </button>
+                                            <div class="flex-1" />
+                                            <button
+                                                class="mr-1 flex h-6 w-6 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:text-(--gql-text)"
+                                                @click="
+                                                    editorToolsVisible =
+                                                        !editorToolsVisible
+                                                "
+                                            >
+                                                <Icon
+                                                    name="chevron-up"
+                                                    :class="
+                                                        'h-3 w-3 transition-transform' +
+                                                        (editorToolsVisible
+                                                            ? ' rotate-180'
+                                                            : '')
+                                                    "
+                                                />
+                                            </button>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div
+                                            v-if="editorToolsVisible"
+                                            class="min-h-0 flex-1 overflow-hidden"
+                                        >
+                                            <JsonEditor
+                                                v-if="activeEditorTool === 'variables'"
+                                                mode="variable"
+                                            />
+                                            <JsonEditor
+                                                v-if="
+                                                    store.isHeadersEditorEnabled &&
+                                                    activeEditorTool === 'headers'
+                                                "
+                                                mode="header"
+                                            />
+                                        </div>
+                                    </div>
+                                </template>
+                            </Split>
+                        </template>
+
+                        <!-- Response -->
+                        <template #response>
+                            <div class="min-w-0">
+                                <!-- Loading spinner overlay -->
+                                <div
+                                    v-if="store.isFetching.value"
+                                    class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-(--gql-primary)/50"
                                 >
-                                    Variables
-                                </button>
-                                <button
-                                    v-if="store.isHeadersEditorEnabled"
-                                    class="px-3 py-1 transition-colors"
-                                    :class="
-                                        activeEditorTool === 'headers'
-                                            ? 'font-medium text-(--gql-text)'
-                                            : 'text-(--gql-text-secondary) hover:text-(--gql-text)'
-                                    "
-                                    @click="activeEditorTool = 'headers'"
-                                >
-                                    Headers
-                                </button>
-                                <div class="flex-1" />
-                                <button
-                                    class="mr-1 flex h-6 w-6 items-center justify-center rounded text-(--gql-text-secondary) transition-colors hover:text-(--gql-text)"
-                                    @click="editorToolsVisible = !editorToolsVisible"
-                                >
-                                    <Icon
-                                        name="chevron-up"
-                                        :class="
-                                            'h-3 w-3 transition-transform' +
-                                            (editorToolsVisible ? ' rotate-180' : '')
-                                        "
+                                    <div
+                                        class="h-6 w-6 animate-spin rounded-full border-2 border-(--gql-primary) border-t-transparent"
                                     />
-                                </button>
+                                </div>
+
+                                <!-- Fetch error banner -->
+                                <div
+                                    v-if="store.fetchError.value"
+                                    class="border-b border-red-200 bg-red-50 px-3 py-2 text-red-500 dark:border-red-900 dark:bg-red-950/20"
+                                >
+                                    {{ store.fetchError.value }}
+                                </div>
+
+                                <ResponseEditor />
                             </div>
-
-                            <!-- Content -->
-                            <div
-                                v-if="editorToolsVisible"
-                                class="min-h-0 flex-1 overflow-hidden"
-                            >
-                                <JsonEditor
-                                    v-if="activeEditorTool === 'variables'"
-                                    mode="variable"
-                                />
-                                <JsonEditor
-                                    v-if="
-                                        store.isHeadersEditorEnabled &&
-                                        activeEditorTool === 'headers'
-                                    "
-                                    mode="header"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Resize handle -->
-                    <SplitGutter
-                        type="column"
-                        ref="gutter2"
-                    />
-
-                    <!-- Response -->
-                    <div class="min-w-0">
-                        <!-- Loading spinner overlay -->
-                        <div
-                            v-if="store.isFetching.value"
-                            class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-(--gql-primary)/50"
-                        >
-                            <div
-                                class="h-6 w-6 animate-spin rounded-full border-2 border-(--gql-primary) border-t-transparent"
-                            />
-                        </div>
-
-                        <!-- Fetch error banner -->
-                        <div
-                            v-if="store.fetchError.value"
-                            class="border-b border-red-200 bg-red-50 px-3 py-2 text-red-500 dark:border-red-900 dark:bg-red-950/20"
-                        >
-                            {{ store.fetchError.value }}
-                        </div>
-
-                        <ResponseEditor />
-                    </div>
+                        </template>
+                    </Split>
                 </div>
-            </div>
-        </div>
+            </template>
+        </Split>
     </div>
 </template>

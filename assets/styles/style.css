@@ -7,6 +7,10 @@
     --gql-border: hsl(var(--primary-h) var(--primary-s) var(--border-l));
     --gql-text-size: 16px; /* min font size not to trigger zoom effect on input on safari */
 
+    /* The split pane gutters (tamandua Split) follow the graphiql theme */
+    --t-split-gutter-color: var(--gql-border);
+    --t-split-gutter-active-color: #3b82f6;
+
     &:not(.dark) {
         --primary-l: 100%;
         --border-l: 85%;
