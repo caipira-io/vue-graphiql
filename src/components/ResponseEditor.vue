@@ -1,27 +1,33 @@
 <script setup lang="ts">
-import { inject } from 'vue';
+import { CodeEditor } from '@caipira/tamandua/components/CodeEditor';
+import { ref, inject, onMounted } from 'vue';
 
+import { useCodeMirror } from '@/src/composables/useCodeMirror';
 import { GRAPHIQL_STORE_KEY } from '@/src/store';
 
-import MonacoEditor from '@/src/components/MonacoEditor.vue';
-
 const store = inject(GRAPHIQL_STORE_KEY)!;
+const { jsonExtensions } = useCodeMirror();
 
-const uri = `${store.instanceId}response.json`;
+const host = ref<InstanceType<typeof CodeEditor> | null>(null);
 
-function onEditorMounted(editor: any) {
-    store.editors.response = editor;
-}
+/**
+ * Read-only result pane: JSON highlighting, no gutter, no linter, word-wrapped
+ * (the host wraps by default).
+ */
+const extensions = jsonExtensions();
+
+onMounted(() => {
+    store.editors.response = host.value?.view ?? null;
+});
 </script>
 
 <template>
-    <MonacoEditor
-        language="json"
-        :value="store.activeTab.value?.response ?? ''"
-        :uri="uri"
-        :read-only="true"
-        :line-numbers="false"
-        :word-wrap="true"
-        @mounted="onEditorMounted"
+    <CodeEditor
+        ref="host"
+        class="size-full min-h-0 min-w-0"
+        :model-value="store.activeTab.value?.response ?? ''"
+        :extensions="extensions"
+        :dark="store.theme.value === 'dark'"
+        :readonly="true"
     />
 </template>

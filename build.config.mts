@@ -29,7 +29,7 @@ export default defineConfig({
         tsconfigPaths: true,
     },
     optimizeDeps: {
-        exclude: ['esbuild', 'monaco-editor', 'vite-plugin-monaco-editor'],
+        exclude: ['esbuild', '@caipira/tamandua'],
     },
     build: {
         lib: {
@@ -40,16 +40,20 @@ export default defineConfig({
         },
         rollupOptions: {
             external: (id) => {
-                // Externalize peer dependencies and their subpaths
+                // Externalize peer dependencies and their subpaths.
                 if (id === 'vue' || id.startsWith('vue/')) return true;
                 if (id === 'graphql' || id.startsWith('graphql/')) return true;
-                if (id === 'monaco-editor' || id.startsWith('monaco-editor/'))
+                // CodeMirror + Lezer must resolve to the consuming app's single
+                // copy (identity/instanceof checks). cm6-graphql is bundled, but
+                // its @codemirror/* imports are externalized here too.
+                if (id === '@codemirror' || id.startsWith('@codemirror/'))
                     return true;
-                if (id === 'monaco-graphql' || id.startsWith('monaco-graphql/'))
-                    return true;
+                if (id === '@lezer' || id.startsWith('@lezer/')) return true;
+                // The tamandua CodeEditor host is provided by the consumer so
+                // there is one CodeMirror host (and one CM copy) across the app.
                 if (
-                    id === 'vite-plugin-monaco-editor' ||
-                    id.startsWith('vite-plugin-monaco-editor/')
+                    id === '@caipira/tamandua' ||
+                    id.startsWith('@caipira/tamandua/')
                 )
                     return true;
                 return false;

@@ -1,86 +1,86 @@
 <script setup lang="ts">
-import { inject, watch } from 'vue';
+import type { Extension } from '@codemirror/state';
 
-import { debounce } from '@/src/utils';
-import { useMonaco } from '@/src/composables/useMonaco';
+import { keymap } from '@codemirror/view';
+import { CodeEditor } from '@caipira/tamandua/components/CodeEditor';
+import { ref, watch, inject, onMounted } from 'vue';
+
+import { useCodeMirror } from '@/src/composables/useCodeMirror';
 import { GRAPHIQL_STORE_KEY } from '@/src/store';
 
-import MonacoEditor from '@/src/components/MonacoEditor.vue';
-
+const host = ref<InstanceType<typeof CodeEditor> | null>(null);
 const store = inject(GRAPHIQL_STORE_KEY)!;
-const { updateSchema } = useMonaco();
+const { graphqlExtensions, updateQuerySchema } = useCodeMirror();
 
-const uri = `${store.instanceId}operation.graphql`;
+/**
+ * Same shortcuts as the former Monaco addAction bindings, as CodeMirror keys:
+ * Mod-Enter run, Shift-Mod-P prettify, Shift-Mod-C copy, Shift-Mod-M merge.
+ */
+const queryKeymap: Extension = keymap.of([
+    {
+        key: 'Mod-Enter',
+        preventDefault: true,
+        run: () => {
+            store.run();
+            return true;
+        },
+    },
+    {
+        key: 'Shift-Mod-p',
+        preventDefault: true,
+        run: () => {
+            store.prettify();
+            return true;
+        },
+    },
+    {
+        key: 'Shift-Mod-c',
+        preventDefault: true,
+        run: () => {
+            store.copyQuery();
+            return true;
+        },
+    },
+    {
+        key: 'Shift-Mod-m',
+        preventDefault: true,
+        run: () => {
+            store.mergeFragments();
+            return true;
+        },
+    },
+]);
 
-function onEditorMounted(editor: any) {
-    store.editors.query = editor;
+/**
+ * Built once. The schema is patched in live via updateQuerySchema (below), so
+ * this array is a stable reference and never triggers a host reconfigure.
+ */
+const extensions = graphqlExtensions(store.schema.value, queryKeymap);
 
-    // Ctrl+Enter - Execute
-    editor.addAction({
-        id: 'graphiql.run',
-        label: 'Run Query',
-        keybindings: [2048 /* CtrlCmd */ | 3 /* Enter */],
-        run: () => store.run(),
-    });
-
-    // Shift+Ctrl+P - Prettify
-    editor.addAction({
-        id: 'graphiql.prettify',
-        label: 'Prettify',
-        keybindings: [2048 | 1024 /* Shift */ | 46 /* KeyP */],
-        run: () => store.prettify(),
-    });
-
-    // Shift+Ctrl+C - Copy
-    editor.addAction({
-        id: 'graphiql.copy',
-        label: 'Copy Query',
-        keybindings: [2048 | 1024 | 33 /* KeyC */],
-        run: () => store.copyQuery(),
-    });
-
-    // Shift+Ctrl+M - Merge
-    editor.addAction({
-        id: 'graphiql.merge',
-        label: 'Merge Fragments',
-        keybindings: [2048 | 1024 | 43 /* KeyM */],
-        run: () => store.mergeFragments(),
-    });
-
-    // Parse on content change (debounced)
-    const debouncedUpdate = debounce(() => {
-        store.updateOperationFacts();
-    }, 100);
-
-    editor.onDidChangeModelContent(() => {
-        debouncedUpdate();
-    });
-
-    // Initial parse
+onMounted(() => {
+    store.editors.query = host.value?.view ?? null;
+    updateQuerySchema(host.value?.view, store.schema.value);
     store.updateOperationFacts();
-}
+});
+
+// When the schema (re)loads, feed it to cm6-graphql through the exposed view.
+watch(
+    () => store.schema.value,
+    (schema) => updateQuerySchema(host.value?.view, schema)
+);
 
 function onValueChange(value: string) {
     store.setEditorValue('query', value);
 }
-
-// When schema changes, update MonacoGraphQL
-watch(
-    () => store.schema.value,
-    (newSchema) => {
-        if (newSchema) {
-            updateSchema(newSchema, store.instanceId);
-        }
-    }
-);
 </script>
 
 <template>
-    <MonacoEditor
-        language="graphql"
-        :value="store.activeTab.value?.query ?? ''"
-        :uri="uri"
-        @update:value="onValueChange"
-        @mounted="onEditorMounted"
+    <CodeEditor
+        ref="host"
+        class="size-full min-h-0 min-w-0"
+        :model-value="store.activeTab.value?.query ?? ''"
+        :extensions="extensions"
+        :dark="store.theme.value === 'dark'"
+        @update:model-value="onValueChange"
     />
 </template>

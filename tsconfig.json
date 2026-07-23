@@ -6,8 +6,7 @@
         "src/**/*.vue",
         "dev/**/*.ts",
         "dev/**/*.vue",
-        "index.ts",
-        "monaco-vite-config.ts"
+        "index.ts"
     ],
     "compilerOptions": {
         "composite": false,

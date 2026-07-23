@@ -1,57 +1,77 @@
 <script setup lang="ts">
-import { inject } from 'vue';
+import type { Extension } from '@codemirror/state';
 
+import { keymap } from '@codemirror/view';
+import { CodeEditor } from '@caipira/tamandua/components/CodeEditor';
+import { ref, inject, computed, onMounted } from 'vue';
+
+import { useCodeMirror } from '@/src/composables/useCodeMirror';
 import { GRAPHIQL_STORE_KEY } from '@/src/store';
-
-import MonacoEditor from '@/src/components/MonacoEditor.vue';
 
 const props = defineProps<{
     mode: 'variable' | 'header';
 }>();
 
 const store = inject(GRAPHIQL_STORE_KEY)!;
+const { jsonExtensions } = useCodeMirror();
 
-const uri =
-    props.mode === 'variable'
-        ? `${store.instanceId}variables.json`
-        : `${store.instanceId}request-headers.json`;
+const host = ref<InstanceType<typeof CodeEditor> | null>(null);
 
-function onEditorMounted(editor: any) {
-    store.editors[props.mode] = editor;
+/**
+ * Same shortcuts as the former Monaco addAction bindings: Mod-Enter run,
+ * Shift-Mod-P prettify.
+ */
+const jsonKeymap: Extension = keymap.of([
+    {
+        key: 'Mod-Enter',
+        preventDefault: true,
+        run: () => {
+            store.run();
+            return true;
+        },
+    },
+    {
+        key: 'Shift-Mod-p',
+        preventDefault: true,
+        run: () => {
+            store.prettify();
+            return true;
+        },
+    },
+]);
 
-    // Ctrl+Enter - Execute
-    editor.addAction({
-        id: 'graphiql.run',
-        label: 'Run Query',
-        keybindings: [2048 | 3],
-        run: () => store.run(),
-    });
+const extensions = jsonExtensions({
+    lineNumbers: true,
+    lint: true,
+    extraKeymap: jsonKeymap,
+});
 
-    // Shift+Ctrl+P - Prettify
-    editor.addAction({
-        id: 'graphiql.prettify',
-        label: 'Prettify',
-        keybindings: [2048 | 1024 | 46],
-        run: () => store.prettify(),
-    });
-}
-
-function onValueChange(value: string) {
-    store.setEditorValue(props.mode, value);
-}
-
-const value =
+/**
+ * Reactive so switching tabs re-renders the pane through v-model (Monaco used
+ * an imperative setValue on tab change; the host is v-model driven instead).
+ */
+const value = computed(() =>
     props.mode === 'variable'
         ? (store.activeTab.value?.variables ?? '')
-        : (store.activeTab.value?.headers ?? '');
+        : (store.activeTab.value?.headers ?? '')
+);
+
+onMounted(() => {
+    store.editors[props.mode] = host.value?.view ?? null;
+});
+
+function onValueChange(newValue: string) {
+    store.setEditorValue(props.mode, newValue);
+}
 </script>
 
 <template>
-    <MonacoEditor
-        language="json"
-        :value="value"
-        :uri="uri"
-        @update:value="onValueChange"
-        @mounted="onEditorMounted"
+    <CodeEditor
+        ref="host"
+        class="size-full min-h-0 min-w-0"
+        :model-value="value"
+        :extensions="extensions"
+        :dark="store.theme.value === 'dark'"
+        @update:model-value="onValueChange"
     />
 </template>

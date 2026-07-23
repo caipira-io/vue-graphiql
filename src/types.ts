@@ -1,4 +1,4 @@
-import type { editor } from 'monaco-editor';
+import type { EditorView } from '@codemirror/view';
 import type { Fetcher, Unsubscribable } from '@graphiql/toolkit';
 import type { Component, Ref, ShallowRef, ComputedRef } from 'vue';
 import type {
@@ -65,15 +65,19 @@ export interface GraphiQLStore {
     operationName: Ref<string | null>;
     operations: ShallowRef<OperationDefinitionNode[]>;
 
-    // Editor instances (non-reactive, use markRaw)
+    /**
+     * Editor instances: the CodeMirror EditorView of each pane, registered by
+     * the pane components on mount. Content flows via v-model/tab state, not
+     * these.
+     */
     editors: {
-        query: editor.IStandaloneCodeEditor | null;
-        variable: editor.IStandaloneCodeEditor | null;
-        header: editor.IStandaloneCodeEditor | null;
-        response: editor.IStandaloneCodeEditor | null;
+        query: EditorView | null;
+        variable: EditorView | null;
+        header: EditorView | null;
+        response: EditorView | null;
     };
 
-    // Unique instance ID for Monaco URIs
+    // Unique instance ID (retained on the public store shape)
     instanceId: string;
 
     // Fetcher & Storage

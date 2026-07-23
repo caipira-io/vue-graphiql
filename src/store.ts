@@ -35,7 +35,7 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     // Fetcher
     const fetcher = createGraphiQLFetcher({ url: props.url });
 
-    // Instance ID for Monaco URIs
+    // Unique instance ID (kept on the public store shape)
     const instanceId = `graphiql-${Date.now()}-`;
 
     // ---- Schema state ----
@@ -96,7 +96,13 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     const operationName = ref<string | null>(null);
     const operations = shallowRef<OperationDefinitionNode[]>([]);
 
-    // ---- Editor instances ----
+    /**
+     * ---- Editor instances (CodeMirror EditorView, registered by the panes) ----
+     *
+     * Content is not read/written through these; the tab state below is the
+     * single source of truth and the panes bind to it via v-model. They are kept
+     * on the store purely for shape compatibility and advanced consumer access.
+     */
     const editors: GraphiQLStore['editors'] = {
         query: null,
         variable: null,
@@ -361,37 +367,23 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     function changeTab(index: number) {
         if (index === activeTabIndex.value) return;
         if (index < 0 || index >= tabs.value.length) return;
-        // Save current editor values to the tab we're leaving
-        saveCurrentEditorValues();
+
+        /**
+         * No editor->tab save needed: the panes keep the active tab in sync on
+         * every keystroke (setEditorValue), so the tab we leave is already current.
+         */
         if (subscription.value) stop();
         activeTabIndex.value = index;
         syncEditorsToTab();
         debouncedStoreTabs();
     }
 
-    function saveCurrentEditorValues() {
-        const tab = tabs.value[activeTabIndex.value];
-        if (!tab) return;
-        if (editors.query) tab.query = editors.query.getValue();
-        if (editors.variable) tab.variables = editors.variable.getValue();
-        if (editors.header) tab.headers = editors.header.getValue();
-    }
-
     function syncEditorsToTab() {
-        const tab = tabs.value[activeTabIndex.value];
-        if (!tab) return;
-        if (editors.query && editors.query.getValue() !== tab.query) {
-            editors.query.setValue(tab.query);
-        }
-        if (editors.variable && editors.variable.getValue() !== tab.variables) {
-            editors.variable.setValue(tab.variables);
-        }
-        if (editors.header && editors.header.getValue() !== tab.headers) {
-            editors.header.setValue(tab.headers);
-        }
-        if (editors.response) {
-            editors.response.setValue(tab.response ?? '');
-        }
+        /**
+         * The editor panes bind their content to the active tab via v-model, so
+         * a tab switch re-renders them automatically. Only the derived operation
+         * facts (used by the toolbar/operation picker) need refreshing here.
+         */
         updateOperationFacts();
     }
 
@@ -465,11 +457,11 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     }
 
     function setEditorValue(which: 'query' | 'variable' | 'header', value: string) {
-        const editorInstance = editors[which];
-        if (editorInstance && editorInstance.getValue() !== value) {
-            editorInstance.setValue(value);
-        }
-        // Also update the tab
+        /**
+         * The pane is bound to the tab via v-model, so writing the tab both
+         * updates persistence AND (for programmatic writes like prettify/history)
+         * propagates the new text into the editor. User edits already match.
+         */
         const tab = tabs.value[activeTabIndex.value];
         if (tab) {
             if (which === 'query') {
@@ -494,14 +486,19 @@ export function createGraphiQLStore(props: GraphiQLProps): GraphiQLStore {
     }
 
     function getEditorValue(which: 'query' | 'variable' | 'header' | 'response'): string {
-        const editorInstance = editors[which === 'response' ? 'response' : which];
-        return editorInstance?.getValue() ?? '';
+        const tab = tabs.value[activeTabIndex.value];
+        if (!tab) return '';
+        if (which === 'query') return tab.query ?? '';
+        if (which === 'variable') return tab.variables ?? '';
+        if (which === 'header') return tab.headers ?? '';
+        return tab.response ?? '';
     }
 
     function setResponseValue(value: string) {
-        if (editors.response) {
-            editors.response.setValue(value);
-        }
+        /**
+         * The response pane is bound to tab.response via v-model (read-only), so
+         * updating the tab is enough to render it.
+         */
         const tab = tabs.value[activeTabIndex.value];
         if (tab) {
             tab.response = value;

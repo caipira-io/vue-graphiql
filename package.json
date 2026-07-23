@@ -29,11 +29,21 @@
     ],
     "dependencies": {
         "@graphiql/toolkit": "^0.11.3",
+        "cm6-graphql": "^0.2.1",
         "markdown-it": "^14.2.0"
     },
     "devDependencies": {
         "@caipira/prettier-plugin-sort-imports": "^0.0.1",
-        "@caipira/tamandua": "^0.0.128",
+        "@caipira/tamandua": "^0.0.129",
+        "@codemirror/autocomplete": "^6.20.3",
+        "@codemirror/commands": "^6.10.4",
+        "@codemirror/lang-json": "^6.0.2",
+        "@codemirror/language": "^6.12.4",
+        "@codemirror/lint": "^6.9.7",
+        "@codemirror/state": "^6.7.1",
+        "@codemirror/view": "^6.43.6",
+        "@lezer/common": "^1.5.2",
+        "@lezer/highlight": "^1.2.3",
         "@tailwindcss/vite": "^4.3.1",
         "@types/markdown-it": "^14.1.2",
         "@types/node": "^20.11.30",
@@ -42,26 +52,59 @@
         "@vue/tsconfig": "^0.5.1",
         "esbuild": "^0.28.1",
         "graphql": "^16.12.0",
-        "monaco-editor": "^0.52.2",
-        "monaco-graphql": "^1.7.3",
         "prettier-plugin-tailwindcss": "^0.8.0",
         "ts-node": "^10.9.1",
         "typescript": "^6.0.3",
         "unplugin-dts": "^1.0.3",
         "vite": "^8.1.0",
         "vite-plugin-lib-inject-css": "^2.2.2",
-        "vite-plugin-monaco-editor": "^1.1.0",
         "vue": "^3.5.25",
         "vue-component-type-helpers": "^2.0.19",
         "vue-tsc": "^3.1.5"
     },
     "peerDependencies": {
+        "@caipira/tamandua": ">=0.0.129",
+        "@codemirror/autocomplete": "^6.0.0",
+        "@codemirror/commands": "^6.0.0",
+        "@codemirror/lang-json": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/state": "^6.0.0",
+        "@codemirror/view": "^6.0.0",
+        "@lezer/common": "^1.0.0",
+        "@lezer/highlight": "^1.0.0",
         "graphql": "^16.0.0",
-        "monaco-editor": ">=0.50.0",
-        "monaco-graphql": "^1.7.0",
         "tailwindcss": "^4.3.1",
         "vite": ">=4.0.0",
         "vue": ">=3.0.0"
+    },
+    "peerDependenciesMeta": {
+        "@caipira/tamandua": {
+            "optional": true
+        },
+        "@codemirror/autocomplete": {
+            "optional": true
+        },
+        "@codemirror/commands": {
+            "optional": true
+        },
+        "@codemirror/lang-json": {
+            "optional": true
+        },
+        "@codemirror/language": {
+            "optional": true
+        },
+        "@codemirror/state": {
+            "optional": true
+        },
+        "@codemirror/view": {
+            "optional": true
+        },
+        "@lezer/common": {
+            "optional": true
+        },
+        "@lezer/highlight": {
+            "optional": true
+        }
     },
     "module": "dist/vue-graphiql.es.js",
     "types": "dist/types/index.d.ts",
@@ -79,6 +122,6 @@
         "vue",
         "graphiql",
         "graphql",
-        "monaco-editor"
+        "codemirror"
     ]
 }

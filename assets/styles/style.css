@@ -27,6 +27,7 @@
         --gql-type: #ca9800;
         --gql-string: #d64292;
         --gql-enum: #0b7285;
+        --gql-number: #2882f9;
     }
 
     &.dark {
@@ -45,11 +46,25 @@
         --gql-type: #e0a825;
         --gql-string: #e57eb0;
         --gql-enum: #22d3ee;
+        --gql-number: #5cb3ff;
     }
 
     font-size: var(--gql-text-size);
     color: var(--gql-text);
     background-color: var(--gql-primary);
+}
+
+/*
+ * Bridge the tamandua editor tokens onto the gql tokens. The @caipira/tamandua
+ * CodeEditor host's base theme paints with --text-color / --unfocused-text-color
+ * / --hover-color; map them to the graphiql palette so the editor tracks the
+ * graphiql light/dark theme. Scoped to the container (NOT :root) so it never
+ * clobbers tamandua's own global tokens when GraphiQL is embedded in an app.
+ */
+.graphiql-container {
+    --text-color: var(--gql-text);
+    --unfocused-text-color: var(--gql-text-secondary);
+    --hover-color: var(--gql-hover);
 }
 
 /* Arg input */
